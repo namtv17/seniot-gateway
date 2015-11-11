@@ -11,8 +11,8 @@ ADD . /var/seniot
 RUN mkdir -p /var/seniot/awsCerts
 VOLUME ["/var/seniot/awsCerts"]
 
-RUN git clone https://github.com/seniot/node-red.git /var/seniot/workflow
-RUN git clone https://github.com/seniot/node-red-nodes.git /var/seniot/workflow/nodes/node-red-nodes
+RUN git clone https://github.com/fpt-software/node-red.git /var/seniot/workflow
+RUN git clone https://github.com/fpt-software/node-red-nodes.git /var/seniot/workflow/nodes/node-red-nodes
 
 RUN cd /var/seniot/workflow/ \	
 	&& git pull \
