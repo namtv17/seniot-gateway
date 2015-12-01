@@ -1,0 +1,48 @@
+[
+	{
+		"id": "d08ae9b7.2f7518",
+		"type": "http in",
+		"z": "96378f7a.69c87",
+		"name": "",
+		"url": "/aws/certs",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 98,
+		"y": 101,
+		"wires": [["809f1cfe.7f60e"]
+		]
+	}, {
+		"id": "809f1cfe.7f60e",
+		"type": "exec",
+		"z": "96378f7a.69c87",
+		"command": "ls ../awsCerts/*-private.pem.key",
+		"addpay": true,
+		"append": "",
+		"useSpawn": "",
+		"name": "GetCertificates",
+		"x": 286,
+		"y": 100,
+		"wires": [["f7706a68.088f98"],[],[]
+		]
+	}, {
+		"id": "f7b14805.084eb8",
+		"type": "http response",
+		"z": "96378f7a.69c87",
+		"name": "",
+		"x": 665,
+		"y": 101,
+		"wires": []
+	}, {
+		"id": "f7706a68.088f98",
+		"type": "function",
+		"z": "96378f7a.69c87",
+		"name": "convertToJSON",
+		"func": "msg.payload = msg.payload.replace(/..\\/awsCerts\\//g,\"\").replace(/-private.pem.key/g, \"\").replace(/\\r\\n/g, \"\\n\").split(\"\\n\");\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 488,
+		"y": 102,
+		"wires": [["f7b14805.084eb8"]
+		]
+	}
+]
