@@ -10,8 +10,8 @@ The current version supports only AWS IoT Platform. You must configure the DOCKE
 + Download all the credentials into ($HOME)/LOCAL_FOLDER/ it looks like:
 
 >($HOME)/LOCAL_FOLDER/**certId**-certificate.pem.crt
-($HOME)/LOCAL_FOLDER/**certId**-private.pem.key
-($HOME)/LOCAL_FOLDER/**certId**-public.pem.key
+>($HOME)/LOCAL_FOLDER/**certId**-private.pem.key
+>($HOME)/LOCAL_FOLDER/**certId**-public.pem.key
 
 **AWS IoT SSL Root Certificate**
 
