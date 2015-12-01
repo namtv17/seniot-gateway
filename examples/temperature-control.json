@@ -1,0 +1,301 @@
+[
+	{
+		"type": "tab",
+		"id": "ac84e3dd.537b2",
+		"label": "Temperature Monitoring"
+	}, {
+		"type": "tab",
+		"id": "9b184eae.64e7b",
+		"label": "Temperature Control"
+	}, {
+		"type": "tab",
+		"id": "22a38e6.fdd5c72",
+		"label": "Door Monitoring"
+	}, {
+		"id": "7329d626.8cd628",
+		"type": "mqtt-broker",
+		"broker": "127.0.0.1",
+		"port": "1883",
+		"clientid": ""
+	}, {
+		"id": "e114b61f.1eeb48",
+		"type": "coap-server",
+		"name": "Temp Server",
+		"port": "5683"
+	}, {
+		"id": "aeadc5c4.515238",
+		"type": "modbustcp-controller",
+		"host": "127.0.0.1",
+		"port": "502"
+	}, {
+		"id": "9359e06a.6ca62",
+		"type": "mqtt-broker",
+		"broker": "127.0.0.1",
+		"port": "1883",
+		"clientid": ""
+	}, {
+		"id": "57587ac5.a8a784",
+		"type": "modbustcp-controller",
+		"host": "127.0.0.1",
+		"port": "502"
+	}, {
+		"id": "c27b572f.3d84a8",
+		"type": "mqtt-broker",
+		"broker": "127.0.0.1",
+		"port": "1883",
+		"clientid": ""
+	}, {
+		"id": "7154097a.8eabf8",
+		"type": "mqtt-broker",
+		"broker": "127.0.0.1",
+		"port": "1883",
+		"clientid": ""
+	}, {
+		"id": "4e469b84.b1b964",
+		"type": "coap in",
+		"method": "POST",
+		"name": "CoAP Temp",
+		"server": "e114b61f.1eeb48",
+		"url": "/state",
+		"x": 169,
+		"y": 190,
+		"z": "ac84e3dd.537b2",
+		"wires": [["cd893a9a.3276c8", "c7f7e846.380818"]
+		]
+	}, {
+		"id": "4006fe0.fbff9",
+		"type": "mqtt out",
+		"name": "",
+		"topic": "temp/state",
+		"qos": "1",
+		"retain": "false",
+		"broker": "7329d626.8cd628",
+		"x": 568,
+		"y": 225,
+		"z": "ac84e3dd.537b2",
+		"wires": []
+	}, {
+		"id": "cd893a9a.3276c8",
+		"type": "function",
+		"name": "Data Processing",
+		"func": "msg.res.end(msg.req.payload);\nmsg.payload={ \"temp\": msg.req.payload };\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 369,
+		"y": 324,
+		"z": "ac84e3dd.537b2",
+		"wires": [["4006fe0.fbff9"]
+		]
+	}, {
+		"id": "c7f7e846.380818",
+		"type": "debug",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "req.payload",
+		"x": 472,
+		"y": 102,
+		"z": "ac84e3dd.537b2",
+		"wires": []
+	}, {
+		"id": "4ae17788.b51e88",
+		"type": "function",
+		"name": "Transform",
+		"func": "return {payload:msg.payload.d.temp};",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 230,
+		"y": 229,
+		"z": "9b184eae.64e7b",
+		"wires": [["e82fb7f6.17d048"]
+		]
+	}, {
+		"id": "e82fb7f6.17d048",
+		"type": "switch",
+		"name": "Process Temp",
+		"property": "payload",
+		"rules": [
+			{
+				"t": "lte",
+				"v": "40"
+			}, {
+				"t": "gt",
+				"v": "40"
+			}
+		],
+		"checkall": "true",
+		"outputs": 2,
+		"x": 248,
+		"y": 121,
+		"z": "9b184eae.64e7b",
+		"wires": [["951aa8d1.6ae558"],["5e5cdae1.a1a324"]
+		]
+	}, {
+		"id": "b2cb1753.4d34e8",
+		"type": "debug",
+		"name": "Debug",
+		"active": true,
+		"console": "false",
+		"complete": "payload",
+		"x": 609,
+		"y": 94,
+		"z": "9b184eae.64e7b",
+		"wires": []
+	}, {
+		"id": "951aa8d1.6ae558",
+		"type": "template",
+		"name": "Is Safe",
+		"field": "",
+		"template": "Temperature ({{payload}}) within safe limits",
+		"x": 418,
+		"y": 60,
+		"z": "9b184eae.64e7b",
+		"wires": [["b2cb1753.4d34e8", "e267f94f.1d9808"]
+		]
+	}, {
+		"id": "5e5cdae1.a1a324",
+		"type": "template",
+		"name": "Is Danger",
+		"field": "",
+		"template": "Temperature ({{payload}}) critical",
+		"x": 419,
+		"y": 183,
+		"z": "9b184eae.64e7b",
+		"wires": [["b2cb1753.4d34e8", "e267f94f.1d9808", "901e0aa4.6fe1f8"]
+		]
+	}, {
+		"id": "dc8db583.237248",
+		"type": "inject",
+		"name": "Temp Input",
+		"topic": "temp",
+		"payload": "{ \"d\" : { \"temp\": 20 }}",
+		"payloadType": "string",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 163,
+		"y": 427,
+		"z": "9b184eae.64e7b",
+		"wires": [["6c8b9e33.93746"]
+		]
+	}, {
+		"id": "6c8b9e33.93746",
+		"type": "json",
+		"name": "JSON",
+		"x": 237,
+		"y": 313,
+		"z": "9b184eae.64e7b",
+		"wires": [["4ae17788.b51e88"]
+		]
+	}, {
+		"id": "e267f94f.1d9808",
+		"type": "mqtt out",
+		"name": "Temp Alert",
+		"topic": "temp/alert",
+		"qos": "1",
+		"retain": "true",
+		"broker": "c27b572f.3d84a8",
+		"x": 627,
+		"y": 214,
+		"z": "9b184eae.64e7b",
+		"wires": []
+	}, {
+		"id": "901e0aa4.6fe1f8",
+		"type": "modbustcp-out",
+		"name": "Unlook The Door",
+		"dataType": "Coil",
+		"adr": "01",
+		"controller": "57587ac5.a8a784",
+		"x": 617,
+		"y": 331,
+		"z": "9b184eae.64e7b",
+		"wires": []
+	}, {
+		"id": "5f2d29e7.a0d2d8",
+		"type": "http response",
+		"name": "Http Response",
+		"x": 604,
+		"y": 428,
+		"z": "9b184eae.64e7b",
+		"wires": []
+	}, {
+		"id": "5afc25c0.a503dc",
+		"type": "http in",
+		"name": "Http Request",
+		"url": "/temp",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 264,
+		"y": 489,
+		"z": "9b184eae.64e7b",
+		"wires": [["1a779363.e5886d"]
+		]
+	}, {
+		"id": "1a779363.e5886d",
+		"type": "function",
+		"name": "Data Processing",
+		"func": "msg.payload.temp = new Date().getTime()/100000000000;\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 414,
+		"y": 368,
+		"z": "9b184eae.64e7b",
+		"wires": [["5f2d29e7.a0d2d8"]
+		]
+	}, {
+		"id": "aab0a323.554f6",
+		"type": "debug",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "payload",
+		"x": 622,
+		"y": 323,
+		"z": "22a38e6.fdd5c72",
+		"wires": []
+	}, {
+		"id": "96cd9eb3.69326",
+		"type": "json",
+		"name": "JSON",
+		"x": 311,
+		"y": 82,
+		"z": "22a38e6.fdd5c72",
+		"wires": [["281fa175.d7e05e"]
+		]
+	}, {
+		"id": "90b2371.f6f4dc8",
+		"type": "mqtt in",
+		"name": "Door State",
+		"topic": "door/#",
+		"broker": "7154097a.8eabf8",
+		"x": 126,
+		"y": 140,
+		"z": "22a38e6.fdd5c72",
+		"wires": [["96cd9eb3.69326"]
+		]
+	}, {
+		"id": "e3772df.f1c88d",
+		"type": "elasticsearch",
+		"index": "node-red-index",
+		"name": "elasticsearch",
+		"documenttype": "door-state",
+		"host": "https://site:4f516ff8637b121da3dac85cb541f352@fili-us-east-1.searchly.com",
+		"port": "443",
+		"x": 655,
+		"y": 145,
+		"z": "22a38e6.fdd5c72",
+		"wires": []
+	}, {
+		"id": "281fa175.d7e05e",
+		"type": "function",
+		"name": "timestamp",
+		"func": "msg.payload.timestamp = new Date().toISOString();\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 446,
+		"y": 213,
+		"z": "22a38e6.fdd5c72",
+		"wires": [["e3772df.f1c88d", "aab0a323.554f6"]
+		]
+	}
+]

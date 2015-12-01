@@ -1,0 +1,252 @@
+[
+	{
+		"id": "2bc6552a.d439aa",
+		"type": "serial-port",
+		"z": "8856ff1d.77a9",
+		"serialport": "/dev/cu.Bluetooth-Incoming-Port",
+		"serialbaud": "57600",
+		"databits": "8",
+		"parity": "none",
+		"stopbits": "1",
+		"newline": "\\n",
+		"bin": "false",
+		"out": "char",
+		"addchar": false
+	}, {
+		"id": "7ef65332.8109ac",
+		"type": "aws-iot-device",
+		"z": "8856ff1d.77a9",
+		"name": "Device-001",
+		"mode": "broker",
+		"clientId": "Device-001",
+		"certsId": "47d4932ed6",
+		"region": "ap-northeast-1"
+	}, {
+		"id": "54bc9c3e.ab4364",
+		"type": "aws-iot-device",
+		"z": "8856ff1d.77a9",
+		"name": "shadow-002",
+		"mode": "shadow",
+		"clientId": "Device-002",
+		"certsId": "4b3f24b626",
+		"region": "ap-northeast-1"
+	}, {
+		"id": "98af3575.6750c8",
+		"type": "debug",
+		"z": "8856ff1d.77a9",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "payload.stateObject.state.desired",
+		"x": 628,
+		"y": 70,
+		"wires": []
+	}, {
+		"id": "74c51cd5.8b3ae4",
+		"type": "function",
+		"z": "8856ff1d.77a9",
+		"name": "door:desired",
+		"func": "var status = msg.payload;\nmsg.payload = {\n   state: {\n       desired: {\n           door: status\n       }\n   }\n}\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 335,
+		"y": 95,
+		"wires": [["17f4745a.e80b8c"]
+		]
+	}, {
+		"id": "17f4745a.e80b8c",
+		"type": "aws-thing",
+		"z": "8856ff1d.77a9",
+		"device": "54bc9c3e.ab4364",
+		"method": "update",
+		"x": 491,
+		"y": 182,
+		"wires": [["98af3575.6750c8"],[]
+		]
+	}, {
+		"id": "f0fc580.f0f03a8",
+		"type": "inject",
+		"z": "8856ff1d.77a9",
+		"name": "",
+		"topic": "door",
+		"payload": "OPEN",
+		"payloadType": "string",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 134,
+		"y": 56,
+		"wires": [["74c51cd5.8b3ae4"]
+		]
+	}, {
+		"id": "99094322.66f6c",
+		"type": "inject",
+		"z": "8856ff1d.77a9",
+		"name": "",
+		"topic": "door",
+		"payload": "CLOSE",
+		"payloadType": "string",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 138,
+		"y": 166,
+		"wires": [["74c51cd5.8b3ae4"]
+		]
+	}, {
+		"id": "3c02185b.c3fde8",
+		"type": "aws-mqtt in",
+		"z": "8856ff1d.77a9",
+		"device": "7ef65332.8109ac",
+		"topic": "$aws/things/shadow-002/shadow/update/delta",
+		"x": 104,
+		"y": 323,
+		"wires": [["8a04d844.75fb28"]
+		]
+	}, {
+		"id": "1a214dc5.e5deb2",
+		"type": "aws-thing",
+		"z": "8856ff1d.77a9",
+		"device": "54bc9c3e.ab4364",
+		"method": "get",
+		"x": 279,
+		"y": 437,
+		"wires": [["863f17b5.79c0e8"],[]
+		]
+	}, {
+		"id": "f38f7490.0c7088",
+		"type": "debug",
+		"z": "8856ff1d.77a9",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "payload.stateObject.state.reported",
+		"x": 641,
+		"y": 711,
+		"wires": []
+	}, {
+		"id": "d8c12733.273ed8",
+		"type": "json",
+		"z": "8856ff1d.77a9",
+		"name": "JSON",
+		"x": 238,
+		"y": 582,
+		"wires": [["2bef05ac.d410fa"]
+		]
+	}, {
+		"id": "2bef05ac.d410fa",
+		"type": "function",
+		"z": "8856ff1d.77a9",
+		"name": "door:reported",
+		"func": "var status = msg.payload;\nmsg.payload = {\n   state: {\n       reported: {\n           door: status\n       }\n   }\n}\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 318,
+		"y": 695,
+		"wires": [["dc2e2984.23d1d8"]
+		]
+	}, {
+		"id": "765429a9.89abd8",
+		"type": "serial in",
+		"z": "8856ff1d.77a9",
+		"name": "Sensor",
+		"serial": "2bc6552a.d439aa",
+		"x": 102,
+		"y": 637,
+		"wires": [["d8c12733.273ed8"]
+		]
+	}, {
+		"id": "dc2e2984.23d1d8",
+		"type": "aws-thing",
+		"z": "8856ff1d.77a9",
+		"device": "54bc9c3e.ab4364",
+		"method": "update",
+		"x": 476,
+		"y": 607,
+		"wires": [["f38f7490.0c7088"],[]
+		]
+	}, {
+		"id": "50515ea4.afaea",
+		"type": "inject",
+		"z": "8856ff1d.77a9",
+		"name": "",
+		"topic": "door",
+		"payload": "OPEN",
+		"payloadType": "string",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 123,
+		"y": 720,
+		"wires": [["2bef05ac.d410fa"]
+		]
+	}, {
+		"id": "e56128af.1a9ed8",
+		"type": "inject",
+		"z": "8856ff1d.77a9",
+		"name": "",
+		"topic": "door",
+		"payload": "CLOSE",
+		"payloadType": "string",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 127,
+		"y": 784,
+		"wires": [["2bef05ac.d410fa"]
+		]
+	}, {
+		"id": "8a04d844.75fb28",
+		"type": "function",
+		"z": "8856ff1d.77a9",
+		"name": "toString()",
+		"func": "var body = msg.payload.toString();\nmsg.payload = body;\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 276,
+		"y": 252,
+		"wires": [["a17d492f.5e82b8"]
+		]
+	}, {
+		"id": "863f17b5.79c0e8",
+		"type": "function",
+		"z": "8856ff1d.77a9",
+		"name": "Control",
+		"func": "var lockVal = msg.payload.stateObject.state.desired.door;\nvar lockText = (msg.payload.stateObject.state.desired.door == msg.payload.stateObject.state.reported.door? \"The door was \": \"The door is being \")\nmsg.payload = lockText + (lockVal==\"CLOSE\" ? \"CLOSED\": \"OPENED\");\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 467,
+		"y": 312,
+		"wires": [["f0a033c.f0f5fd", "573b20fc.a8c4e"]
+		]
+	}, {
+		"id": "f0a033c.f0f5fd",
+		"type": "serial out",
+		"z": "8856ff1d.77a9",
+		"name": "Door Lock",
+		"serial": "2bc6552a.d439aa",
+		"x": 644,
+		"y": 258,
+		"wires": []
+	}, {
+		"id": "573b20fc.a8c4e",
+		"type": "debug",
+		"z": "8856ff1d.77a9",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "payload",
+		"x": 597,
+		"y": 380,
+		"wires": []
+	}, {
+		"id": "a17d492f.5e82b8",
+		"type": "json",
+		"z": "8856ff1d.77a9",
+		"name": "JSON",
+		"x": 279,
+		"y": 336,
+		"wires": [["1a214dc5.e5deb2"]
+		]
+	}
+]
