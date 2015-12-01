@@ -23,3 +23,8 @@ You must configure the DOCKER VOLUMES pointed to a LOCAL FOLDER that contains th
 >($HOME)/LOCAL_FOLDER/root-CA.crt
 
 For the Root Certificate, you can download the root certificate from https://www.symantec.com/content/en/us/enterprise/verisign/roots/VeriSign-Class%203-Public-Primary-Certification-Authority-G5.pem and change the name into *root-CA.crt*
+
+Azure IoT Hub Integration 
+-----------------------
+
+(Under Construction)
