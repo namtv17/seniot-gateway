@@ -2,7 +2,10 @@
 
 (Powered by FPT-Software)
 
-The current version supports only AWS IoT Platform. You must configure the DOCKER VOLUMES pointed to a LOCAL FOLDER that contains the AWS credentials. It's included:
+AWS IoT Hub Integration 
+-----------------------
+
+You must configure the DOCKER VOLUMES pointed to a LOCAL FOLDER that contains the AWS credentials.
 
 **Thing's credential**
 + Go to https://ap-northeast-1.console.aws.amazon.com/iot/home?region=ap-northeast-1
