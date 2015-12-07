@@ -30,19 +30,25 @@ module.exports = function(RED) {
 		this.deviceName = n.name;
 		this.hostName = n.hostName;
 		this.sharedAccessKeyName = n.sharedAccessKeyName;
-		this.sharedAccessKey = n.sharedAccessKey;
 		this.deviceId = n.deviceId;
 		this.deviceKey = n.deviceKey;
+		this.mode = n.mode;
 		
 		var self = this;
-
+		console.log(JSON.stringify(self));
 		this.connect = function() {
 			if (!self.device) {
-				
 				var connectionString = 'HostName='+self.hostName+';DeviceId='+self.deviceId+';SharedAccessKeyName='+self.sharedAccessKeyName+';SharedAccessKey='+self.deviceKey+'';
-				self.log("Attemp to create to  " + self.deviceId);
-				httpClient = new Client.fromConnectionString(connectionString);
-				self.device = httpClient;
+
+				if (self.mode == "http") {
+					self.log("Attemp to create Azure IoT Hub http node to  " + self.deviceId);
+					httpClient = new Client.fromConnectionString(connectionString);
+					self.device = httpClient;
+				} else if (self.mode == "amqp") {
+					self.log("Attemp to create Azure IoT Hub http node to  " + self.deviceId);
+				} else {
+					
+				}
 			}
 			    
 		};
@@ -51,53 +57,48 @@ module.exports = function(RED) {
 
 	RED.nodes.registerType("azure-iot-device", azureIoTHubNode);
 
-	function azureMqttNodeIn(n) {
+	function azureHttpNodeIn(n) {
 		RED.nodes.createNode(this, n);
 		this.myDevice = n.device;
 		this.azureIot = RED.nodes.getNode(this.myDevice);
-
+		this.interval = n.interval;
+		var self = this;
+		
 		if (this.azureIot) {
 			var self = this;
 			this.azureIot.connect();
 			self.log('Creating EventHubClient: ' + this.azureIot.name);
 			
-		    var connectionString = 'HostName='+this.azureIot.hostName+';SharedAccessKeyName='+this.azureIot.sharedAccessKeyName+';SharedAccessKey='+this.azureIot.sharedAccessKey+'';
+		    var connectionString = 'HostName='+this.azureIot.hostName+';SharedAccessKeyName='+this.azureIot.sharedAccessKeyName+';SharedAccessKey='+this.azureIot.deviceKey+'';
 
-			var startTime = Date.now();
-			var ehClient = new EventHubClient(connectionString, 'messages/events/');
-			  ehClient.GetPartitionIds().then(function(partitionIds) {
-			    partitionIds.forEach(function(partitionId) {
-			      ehClient.CreateReceiver('$Default', partitionId).then(function(receiver) {
-			          // start receiving
-			        receiver.StartReceive(startTime).then(function() {
-			          receiver.on('error', function(error) {
-			            serviceError(error.description);
-			          });
-			          receiver.on('eventReceived', function(eventData) {
-			            if ((eventData.SystemProperties['iothub-connection-device-id'] === self.azureIot.deviceId) &&
-			                (eventData.SystemProperties['x-opt-enqueued-time'] >= startTime)) {
-			              console.log('Event received['+self.azureIot.deviceId+']: ' + JSON.stringify(eventData.Bytes));
-
-			              self.send({
-								payload : JSON.parse(JSON.stringify(eventData.Bytes))
-							});
-			            }
-			          });
-			        });
-			        return receiver;
-			      });
-			    });
-			    return partitionIds;
-			  });
+			if (this.azureIot.mode == "http") {
+				setInterval(function () {
+				  httpClient.receive(function (err, msg, res) {
+				    if (err) printResultFor('receive')(err, res);
+				    else if (res.statusCode !== 204) {
+				      console.log('Received data: ' + msg.getData());
+				      self.send({
+							payload : JSON.parse(msg.getData())
+						});
+				
+				      httpClient.complete(msg, printResultFor('complete'));
+				    }
+				  });
+				}, self.interval);
+			} else if (this.azureIot.mode == "amqp") {
+				
+			} else {
+				
+			}
 		} else {
 			this.error("azure-iot-hub in is not configured");
 		}
 	}
 
 
-	RED.nodes.registerType("azure-iot-hub in", azureMqttNodeIn);
+	RED.nodes.registerType("azure-iot-hub in", azureHttpNodeIn);
 
-	function azureMqttNodeOut(n) {
+	function azureHttpNodeOut(n) {
 		RED.nodes.createNode(this, n);
 		this.myDevice = n.device;
 		this.azureIot = RED.nodes.getNode(this.myDevice);
@@ -134,5 +135,5 @@ module.exports = function(RED) {
 	  };
 	}
 	
-	RED.nodes.registerType("azure-iot-hub out", azureMqttNodeOut);
+	RED.nodes.registerType("azure-iot-hub out", azureHttpNodeOut);
 };

@@ -19,32 +19,28 @@ limitations under the License.
 		<label for="node-config-input-name"><i class="fa fa-globe"></i> Name</label>
 		<input type="text" id="node-config-input-name" placeholder="Name">
 	</div>
-	<!-- <div class="form-row">
+	<div class="form-row">
 	<label for="node-config-input-mode"><i class="fa fa-tag"></i> Type</label>
 		<select type="text" id="node-config-input-mode">
-			<option value="broker">HTTP</option>
-			<option value="shadow">AMQP</option>
+			<option value="http">HTTP</option>
+			<option value="amqp">AMQP</option>
 		</select>
-	</div> -->
+	</div>
 	<div class="form-row">
 		<label for="node-config-input-hostName"><i class="fa fa-tag"></i>HostName</label>
-		<input type="text" id="node-config-input-hostName" placeholder="Host Name" value="device-001.azure-devices.net">
+		<input type="text" id="node-config-input-hostName" placeholder="Host Name" value="">
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-sharedAccessKeyName"><i class="fa fa-tag"></i>AccessKeyName</label>
-		<input type="text" id="node-config-input-sharedAccessKeyName" placeholder="Shared Access Key Name" value="iothubowner">
-	</div>
-	<div class="form-row">
-		<label for="node-config-input-sharedAccessKey"><i class="fa fa-tag"></i>AccessKey</label>
-		<input type="text" id="node-config-input-sharedAccessKey" placeholder="Shared Access Key" value="47TI7gEkxNgehRqrnU7oWNJpARNyu3cCSJjJ5SipCFQ=">
+		<input type="text" id="node-config-input-sharedAccessKeyName" placeholder="Shared Access Key Name" value="device">
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-deviceId"><i class="fa fa-tag"></i>Device ID</label>
-		<input type="text" id="node-config-input-deviceId" placeholder="Device ID" value="sample-device-001">
+		<input type="text" id="node-config-input-deviceId" placeholder="Device ID" value="">
 	</div>
 	<div class="form-row">
 		<label for="node-config-input-deviceKey"><i class="fa fa-tag"></i>Device Key</label>
-		<input type="text" id="node-config-input-deviceKey" placeholder="Device ID" value="uVxo3ccHGBOIT09SHKtuEDo8pYtuu7uwFWW3wBr/asM=">
+		<input type="text" id="node-config-input-deviceKey" placeholder="Device ID" value="">
 	</div>
 </script>
 
@@ -60,7 +56,7 @@ limitations under the License.
 				required : true
 			},
 			mode : {
-				value : "http",
+				value : "",
 				required : true
 			},
 			hostName : {
@@ -68,10 +64,6 @@ limitations under the License.
 				required : true
 			},
 			sharedAccessKeyName : {
-				value : "",
-				required : true
-			},
-			sharedAccessKey : {
 				value : "",
 				required : true
 			},
@@ -110,9 +102,6 @@ limitations under the License.
 			device : {
 				type : "azure-iot-device",
 				required : true
-			},
-			qos : {
-				value : "0"
 			}
 		},
 		inputs : 1,
@@ -151,9 +140,8 @@ limitations under the License.
 				type : "azure-iot-device",
 				required : true
 			},
-			topic : {
-				value : "",
-				required : true
+			interval: {
+				value: 1000,
 			}
 		},
 		inputs : 0,
