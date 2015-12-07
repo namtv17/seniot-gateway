@@ -6,8 +6,7 @@ module.exports = function(RED) {
  	var Message = Device.Message;
  	var Http = Device.Http;
 
- 	var deviceClient;
- 	
+	
 	function azureIoTHubNode(n) {
 		RED.nodes.createNode(this, n);
 		this.deviceName = n.name;
@@ -18,19 +17,17 @@ module.exports = function(RED) {
 		this.mode = n.mode;
 		
 		var self = this;
-		console.log(JSON.stringify(self));
+		
 		this.connect = function() {
 			if (!self.device) {
 				var connectionString = 'HostName='+self.hostName+';DeviceId='+self.deviceId+';SharedAccessKeyName='+self.sharedAccessKeyName+';SharedAccessKey='+self.deviceKey+'';
 
 				if (self.mode == "http") {
 					self.log("Attemp to create Azure IoT Hub http node to  " + self.deviceId);
-					deviceClient = new Client.fromConnectionString(connectionString);
-					self.device = deviceClient;
+					self.device = new Client.fromConnectionString(connectionString);
 				} else if (self.mode == "amqp") {
 					self.log("Attemp to create Azure IoT Hub AMQP node to  " + self.deviceId);
-					deviceClient = new Client.fromConnectionString(connectionString, Device.Amqp);
-					self.device = deviceClient;
+					self.device = new Client.fromConnectionString(connectionString, Device.Amqp);
 				} else {
 					
 				}
@@ -51,31 +48,32 @@ module.exports = function(RED) {
 		
 		if (this.azureIot) {
 			self.azureIot.connect();
-			self.log('Creating EventHubClient: ' + this.azureIot.name);
 			
 		    var connectionString = 'HostName='+this.azureIot.hostName+';SharedAccessKeyName='+this.azureIot.sharedAccessKeyName+';SharedAccessKey='+this.azureIot.deviceKey+'';
 
 			if (this.azureIot.mode == "http") {
+				self.log('Creating azureIoTHubNodeIn: http ' + this.azureIot.name + ' mode=' + this.azureIot.mode);
 				setInterval(function () {
-				  deviceClient.receive(function (err, msg, res) {
+				  self.azureIot.device.receive(function (err, msg, res) {
 				    if (err) printResultFor('receive')(err, res);
 				    else if (res.statusCode !== 204) {
-				      console.log('azureIoTHubNodeIn httpNode Received data: ' + msg.getData());
+				      console.log('azureIoTHubNodeIn httpNode Received data: ' + msg.getData() + ' deviceId=' + self.azureIot.deviceId);
 				      self.send({
 							payload : JSON.parse(msg.getData())
 						});
 				
-				      deviceClient.complete(msg, printResultFor('complete'));
+				      self.azureIot.device.complete(msg, printResultFor('complete'));
 				    }
 				  });
-				}, 1000);
+				}, self.interval);
 			} else if (this.azureIot.mode == "amqp") {
-				deviceClient.getReceiver(function (err, receiver)
+				self.log('Creating azureIoTHubNodeIn: amqp ' + this.azureIot.name + ' mode=' + this.azureIot.mode);
+				self.azureIot.device.getReceiver(function (err, receiver)
 					{
 					  receiver.on('message', function (msg) {
-					    console.log('azureIoTHubNodeIn AmqpNode Id: ' + msg.properties.messageId + ' Body: ' + msg.body);
+					    console.log('azureIoTHubNodeIn AmqpNode data: '  + JSON.stringify(msg.body) + ' deviceId=' + self.azureIot.deviceId);
 					    self.send({
-							payload : JSON.parse(msg.body)
+							payload : msg.body
 						});
 					    receiver.complete(msg, function() {
 					      console.log('completed');
@@ -127,7 +125,7 @@ module.exports = function(RED) {
 				console.log("Sending message: " + message.getData());
 				
 				if (this.azureIot.mode == "http" || this.azureIot.mode == "amqp") {
-					deviceClient.sendEvent(message, printResultFor('send'));
+					self.azureIot.device.sendEvent(message, printResultFor('send'));
 				} else {
 					
 				}
