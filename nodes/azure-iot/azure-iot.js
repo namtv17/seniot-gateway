@@ -1,18 +1,3 @@
-/**
- * Copyright 2014 IBM Corp.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
 
 module.exports = function(RED) {
 	"use strict";
@@ -20,10 +5,8 @@ module.exports = function(RED) {
  	var Client = Device.Client;
  	var Message = Device.Message;
  	var Http = Device.Http;
- 	var EventHubClient = require('./lib/eventhubclient.js');
 
- 	var httpClient;
- 	var evtHubClient;
+ 	var deviceClient;
  	
 	function azureIoTHubNode(n) {
 		RED.nodes.createNode(this, n);
@@ -42,10 +25,12 @@ module.exports = function(RED) {
 
 				if (self.mode == "http") {
 					self.log("Attemp to create Azure IoT Hub http node to  " + self.deviceId);
-					httpClient = new Client.fromConnectionString(connectionString);
-					self.device = httpClient;
+					deviceClient = new Client.fromConnectionString(connectionString);
+					self.device = deviceClient;
 				} else if (self.mode == "amqp") {
-					self.log("Attemp to create Azure IoT Hub http node to  " + self.deviceId);
+					self.log("Attemp to create Azure IoT Hub AMQP node to  " + self.deviceId);
+					deviceClient = new Client.fromConnectionString(connectionString, Device.Amqp);
+					self.device = deviceClient;
 				} else {
 					
 				}
@@ -57,7 +42,7 @@ module.exports = function(RED) {
 
 	RED.nodes.registerType("azure-iot-device", azureIoTHubNode);
 
-	function azureHttpNodeIn(n) {
+	function azureIoTHubNodeIn(n) {
 		RED.nodes.createNode(this, n);
 		this.myDevice = n.device;
 		this.azureIot = RED.nodes.getNode(this.myDevice);
@@ -65,28 +50,48 @@ module.exports = function(RED) {
 		var self = this;
 		
 		if (this.azureIot) {
-			var self = this;
-			this.azureIot.connect();
+			self.azureIot.connect();
 			self.log('Creating EventHubClient: ' + this.azureIot.name);
 			
 		    var connectionString = 'HostName='+this.azureIot.hostName+';SharedAccessKeyName='+this.azureIot.sharedAccessKeyName+';SharedAccessKey='+this.azureIot.deviceKey+'';
 
 			if (this.azureIot.mode == "http") {
 				setInterval(function () {
-				  httpClient.receive(function (err, msg, res) {
+				  deviceClient.receive(function (err, msg, res) {
 				    if (err) printResultFor('receive')(err, res);
 				    else if (res.statusCode !== 204) {
-				      console.log('Received data: ' + msg.getData());
+				      console.log('azureIoTHubNodeIn httpNode Received data: ' + msg.getData());
 				      self.send({
 							payload : JSON.parse(msg.getData())
 						});
 				
-				      httpClient.complete(msg, printResultFor('complete'));
+				      deviceClient.complete(msg, printResultFor('complete'));
 				    }
 				  });
-				}, self.interval);
+				}, 1000);
 			} else if (this.azureIot.mode == "amqp") {
-				
+				deviceClient.getReceiver(function (err, receiver)
+					{
+					  receiver.on('message', function (msg) {
+					    console.log('azureIoTHubNodeIn AmqpNode Id: ' + msg.properties.messageId + ' Body: ' + msg.body);
+					    self.send({
+							payload : JSON.parse(msg.body)
+						});
+					    receiver.complete(msg, function() {
+					      console.log('completed');
+					    });
+					    // receiver.reject(msg, function() {
+					    //   console.log('rejected');
+					    // });
+					    // receiver.abandon(msg, function() {
+					    //   console.log('abandoned');
+					    // });
+					  });
+					  receiver.on('errorReceived', function(err)
+					  {
+					    console.warn(err);
+					  });
+					});
 			} else {
 				
 			}
@@ -96,9 +101,9 @@ module.exports = function(RED) {
 	}
 
 
-	RED.nodes.registerType("azure-iot-hub in", azureHttpNodeIn);
+	RED.nodes.registerType("azure-iot-hub in", azureIoTHubNodeIn);
 
-	function azureHttpNodeOut(n) {
+	function azureIoTHubNodeOut(n) {
 		RED.nodes.createNode(this, n);
 		this.myDevice = n.device;
 		this.azureIot = RED.nodes.getNode(this.myDevice);
@@ -121,7 +126,11 @@ module.exports = function(RED) {
 				var message = new Message(msg.payload);
 				console.log("Sending message: " + message.getData());
 				
-				httpClient.sendEvent(message, printResultFor('send'));
+				if (this.azureIot.mode == "http" || this.azureIot.mode == "amqp") {
+					deviceClient.sendEvent(message, printResultFor('send'));
+				} else {
+					
+				}
 			});
 		} else {
 			this.error("azure-iot-hub out is not configured");
@@ -135,5 +144,5 @@ module.exports = function(RED) {
 	  };
 	}
 	
-	RED.nodes.registerType("azure-iot-hub out", azureHttpNodeOut);
+	RED.nodes.registerType("azure-iot-hub out", azureIoTHubNodeOut);
 };
