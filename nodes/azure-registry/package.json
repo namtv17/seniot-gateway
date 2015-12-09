@@ -1,0 +1,27 @@
+{
+  "name": "device-manager",
+  "version": "0.0.6",
+  "description": "Device Manager Node for Node-RED",
+  "dependencies": {
+    "body-parser": "1.12.0",
+    "express": "4.12.0",    
+    "mustache": "1.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fpt-software/seniot-gateway.git"
+  },
+  "keywords": [
+    "node-red",
+    "iot-hub",
+    "device"
+  ],
+  "node-red": {
+    "nodes": {
+      "device-manager": "device-manager.js"
+    }
+  },
+  "scripts": {
+    "postinstall": "node rewritefiles.js"
+  }
+}

@@ -1,0 +1,48 @@
+[
+	{
+		"id": "8f78bd0d.70874",
+		"type": "http in",
+		"z": "65fb9c59.9a0464",
+		"name": "",
+		"url": "/azure/devices",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 119,
+		"y": 106,
+		"wires": [["919e3287.6e61d"]
+		]
+	}, {
+		"id": "919e3287.6e61d",
+		"type": "exec",
+		"z": "65fb9c59.9a0464",
+		"command": "ls ../azure/devices/*.json",
+		"addpay": true,
+		"append": "",
+		"useSpawn": "",
+		"name": "GetDevices",
+		"x": 307,
+		"y": 105,
+		"wires": [["4d979225.b2686c"],[],[]
+		]
+	}, {
+		"id": "ed5c1404.12a3e8",
+		"type": "http response",
+		"z": "65fb9c59.9a0464",
+		"name": "",
+		"x": 686,
+		"y": 106,
+		"wires": []
+	}, {
+		"id": "4d979225.b2686c",
+		"type": "function",
+		"z": "65fb9c59.9a0464",
+		"name": "convertToJSON",
+		"func": "msg.payload = msg.payload.replace(/..\\/azure\\/devices\\//g,\"\").replace(/.json/g, \"\").replace(/\\r\\n/g, \"\\n\").split(\"\\n\");\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 509,
+		"y": 107,
+		"wires": [["ed5c1404.12a3e8"]
+		]
+	}
+]
