@@ -1,0 +1,230 @@
+[
+	{
+		"id": "2462b705.db9d48",
+		"type": "subflow",
+		"name": "CertificateManager",
+		"info": "",
+		"in": [],
+		"out": []
+	}, {
+		"id": "e34215fa.1cbde8",
+		"type": "http in",
+		"z": "2462b705.db9d48",
+		"name": "",
+		"url": "/aws/certs",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 115,
+		"y": 87,
+		"wires": [["d7e0da76.281f28"]
+		]
+	}, {
+		"id": "d7e0da76.281f28",
+		"type": "exec",
+		"z": "2462b705.db9d48",
+		"command": "ls -d ../aws/certs/*/",
+		"addpay": true,
+		"append": "",
+		"useSpawn": "",
+		"name": "GetCertificates",
+		"x": 303,
+		"y": 86,
+		"wires": [["ee0a747f.11f588"],[],[]
+		]
+	}, {
+		"id": "40c506cb.bf3af8",
+		"type": "http response",
+		"z": "2462b705.db9d48",
+		"name": "",
+		"x": 682,
+		"y": 87,
+		"wires": []
+	}, {
+		"id": "ee0a747f.11f588",
+		"type": "function",
+		"z": "2462b705.db9d48",
+		"name": "convertToJSON",
+		"func": "msg.payload = msg.payload.replace(/..\\/aws\\/certs\\//g,\"\").replace(/\\//g, \"\").replace(/\\r\\n/g, \"\\n\").split(\"\\n\");\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 505,
+		"y": 88,
+		"wires": [["40c506cb.bf3af8"]
+		]
+	}, {
+		"id": "f3752436.0c8ad8",
+		"type": "serial-port",
+		"z": "f0d9d81f.0f2628",
+		"serialport": "/dev/cu.Bluetooth-Incoming-Port",
+		"serialbaud": "57600",
+		"databits": "8",
+		"parity": "none",
+		"stopbits": "1",
+		"newline": "\\n",
+		"bin": "false",
+		"out": "char",
+		"addchar": false
+	}, {
+		"id": "1255a652.edaa5a",
+		"type": "serial-port",
+		"z": "f0d9d81f.0f2628",
+		"serialport": "/dev/cu.Bluetooth-Incoming-Port",
+		"serialbaud": "57600",
+		"databits": "8",
+		"parity": "none",
+		"stopbits": "1",
+		"newline": "\\n",
+		"bin": "false",
+		"out": "char",
+		"addchar": false
+	}, {
+		"id": "74e27290.8b1d8c",
+		"type": "aws-iot-device",
+		"z": "f0d9d81f.0f2628",
+		"name": "Device-001",
+		"mode": "broker",
+		"clientId": "Device-ID00001",
+		"certId": "e51610d943",
+		"region": "ap-northeast-1"
+	}, {
+		"id": "4334d73b.bccb28",
+		"type": "aws-iot-device",
+		"z": "f0d9d81f.0f2628",
+		"name": "Device-002",
+		"mode": "broker",
+		"clientId": "Device-ID0000002",
+		"certId": "649ca31808",
+		"region": "ap-northeast-1"
+	}, {
+		"id": "2c9c7f50.d3638",
+		"type": "function",
+		"z": "f0d9d81f.0f2628",
+		"name": "CheckSerialNumber",
+		"func": "if (msg.serialNumber==\"SN0000001\")\n   return msg;\nreturn null;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 382,
+		"y": 105,
+		"wires": [["8d1fe07b.72e02"]
+		]
+	}, {
+		"id": "e585b139.1a7a5",
+		"type": "function",
+		"z": "f0d9d81f.0f2628",
+		"name": "CheckSerialNumber",
+		"func": "if (msg.serialNumber==\"SN0000002\")\n   return msg;\nreturn null;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 380,
+		"y": 201,
+		"wires": [["96b0832.f694f8"]
+		]
+	}, {
+		"id": "96b0832.f694f8",
+		"type": "aws-mqtt out",
+		"z": "f0d9d81f.0f2628",
+		"device": "4334d73b.bccb28",
+		"qos": "0",
+		"x": 599,
+		"y": 201,
+		"wires": []
+	}, {
+		"id": "8d1fe07b.72e02",
+		"type": "aws-mqtt out",
+		"z": "f0d9d81f.0f2628",
+		"device": "74e27290.8b1d8c",
+		"qos": "0",
+		"x": 602,
+		"y": 105,
+		"wires": []
+	}, {
+		"id": "1fe94712.e016b9",
+		"type": "serial in",
+		"z": "f0d9d81f.0f2628",
+		"name": "Thermostat-01",
+		"serial": "1255a652.edaa5a",
+		"x": 182,
+		"y": 105,
+		"wires": [["2c9c7f50.d3638"]
+		]
+	}, {
+		"id": "92f1c503.6d0e38",
+		"type": "serial in",
+		"z": "f0d9d81f.0f2628",
+		"name": "Thermostat-02",
+		"serial": "f3752436.0c8ad8",
+		"x": 182,
+		"y": 201,
+		"wires": [["e585b139.1a7a5"]
+		]
+	}, {
+		"id": "2bc64b23.d439b4",
+		"type": "aws-mqtt in",
+		"z": "f0d9d81f.0f2628",
+		"device": "74e27290.8b1d8c",
+		"topic": "/thermostat/#",
+		"x": 175,
+		"y": 313,
+		"wires": [["1e80149b.e17feb"]
+		]
+	}, {
+		"id": "22e4e168.dd1b1e",
+		"type": "aws-mqtt in",
+		"z": "f0d9d81f.0f2628",
+		"device": "4334d73b.bccb28",
+		"topic": "/thermostat/#",
+		"x": 178,
+		"y": 376,
+		"wires": [["5f79e376.a0861c"]
+		]
+	}, {
+		"id": "62031e0a.9dfce",
+		"type": "serial out",
+		"z": "f0d9d81f.0f2628",
+		"name": "Thermostat-01",
+		"serial": "1255a652.edaa5a",
+		"x": 612,
+		"y": 313,
+		"wires": []
+	}, {
+		"id": "f8e37141.071c9",
+		"type": "serial out",
+		"z": "f0d9d81f.0f2628",
+		"name": "Thermostat-02",
+		"serial": "1255a652.edaa5a",
+		"x": 611,
+		"y": 376,
+		"wires": []
+	}, {
+		"id": "1e80149b.e17feb",
+		"type": "function",
+		"z": "f0d9d81f.0f2628",
+		"name": "CheckSerialNumber",
+		"func": "if (msg.serialNumber==\"SN0000001\")\n   return msg;\nreturn null;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 387,
+		"y": 313,
+		"wires": [["62031e0a.9dfce"]
+		]
+	}, {
+		"id": "5f79e376.a0861c",
+		"type": "function",
+		"z": "f0d9d81f.0f2628",
+		"name": "CheckSerialNumber",
+		"func": "if (msg.serialNumber==\"SN0000002\")\n   return msg;\nreturn null;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 387,
+		"y": 376,
+		"wires": [["f8e37141.071c9"]
+		]
+	}, {
+		"id": "161d3bec.e9e2c4",
+		"type": "subflow:2462b705.db9d48",
+		"z": "f0d9d81f.0f2628",
+		"x": 109,
+		"y": 36,
+		"wires": []
+	}
+]
