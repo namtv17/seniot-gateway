@@ -53,6 +53,7 @@ module.exports = function(RED) {
 				var output = Math.min(self.coolto, self.heatto) + Math.random() * Math.abs(self.coolto - self.heatto);
 				var input = self.controller.update(output);
 				console.log(output + " - " + input + "    " + self.name);
+				self.temperature = self.temperature  - input;
 				self.send({
 					payload : {
 						name : self.name,
