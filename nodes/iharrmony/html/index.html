@@ -141,6 +141,21 @@
 		<script src="js/jquery.js"></script>
 		<script src="js/jquery-ui.js"></script>
 		<script>
+			$(document).ready(function() {
+				$.ajax({
+					url : window.location.href + "status",
+					context : document.body
+				}).done(function(data) {
+					var json = $.parseJSON(data);
+					if (json.heatto){
+						alert(json.heatto);
+						$("#coolto-tmp").html(json.coolto);
+						$("#heatto-tmp").html(json.heatto);
+						$("#current-tmp").html(json.temperature);
+					}
+				});
+			});
+
 			$(function() {
 				var selected = 0;
 				$("#coolto").click(function() {
