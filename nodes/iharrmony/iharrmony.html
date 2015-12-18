@@ -1,0 +1,32 @@
+<script type="text/x-red" data-template-name="iharrmony">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="name">
+    </div>
+
+</script>
+
+<script type="text/x-red" data-help-name="iharrmony">
+	Using this node you can transmit information to http response. Just send JSON msg (for example using a function node) to this node and receive them in http response.<br/>
+	<p>This node is combination httprequest and http response nodes.</p>
+</script>
+
+<script type="text/javascript">
+    RED.nodes.registerType('iharrmony',{
+        category: 'advanced-function',
+        color:"darksalmon",
+        defaults: {
+            name: {value:""}
+        },
+        inputs:0,
+        outputs:1,
+        icon: "arrow-in.png",
+        align: "right",
+        label: function() {
+            return this.name;
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"iharrmony";
+        }
+    });
+</script>

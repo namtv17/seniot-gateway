@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>iHarmony</title>
+		<meta name="generator" content="Google Web Designer 1.5.3.1209">
+		<style type="text/css" id="gwd-text-style">
+			p {
+				margin: 0px;
+			}
+			h1 {
+				margin: 0px;
+			}
+			h2 {
+				margin: 0px;
+			}
+			h3 {
+				margin: 0px;
+			}
+		</style>
+		<style type="text/css">
+			html, body {
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+			}
+			body {
+				transform: perspective(1400px) matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+				transform-style: preserve-3d;
+				background-color: transparent;
+			}
+			#gwd-img-1spx {
+				position: absolute;
+				width: 415px;
+				height: 414px;
+				left: 628px;
+				top: 92px;
+			}
+			#up-arrow {
+				position: absolute;
+				width: 37px;
+				height: 29px;
+				left: 812px;
+				top: 129px;
+			}
+			#down-arrow {
+				position: absolute;
+				width: 37px;
+				height: 29px;
+				left: 813px;
+				top: 444px;
+			}
+			#coolto {
+				position: absolute;
+				width: 80px;
+				height: 16px;
+				font-family: 'Times New Roman';
+				color: rgb(0, 0, 0);
+				left: 756px;
+				top: 198px;
+				font-weight: bold;
+			}
+			#heatto {
+				position: absolute;
+				font-family: 'Times New Roman';
+				color: rgb(0, 0, 0);
+				font-weight: bold;
+				left: 760px;
+				top: 346px;
+			}
+			#gwd-p-vqt1 {
+				position: absolute;
+				width: 18px;
+				height: 11px;
+				left: 779px;
+				top: 345px;
+				font-family: 'Times New Roman';
+				color: rgb(0, 0, 0);
+			}
+			#gwd-p-bg16 {
+				position: absolute;
+				width: 67px;
+				height: 15px;
+				left: 797px;
+				top: 330px;
+				font-family: 'Times New Roman';
+				color: rgb(0, 0, 0);
+			}
+			#coolto-tmp {
+				position: absolute;
+				color: rgb(0, 0, 0);
+				transform-origin: -74px 19px 0px;
+				font-family: fantasy;
+				font-size: 36px;
+				transform-style: preserve-3d;
+				width: 50px;
+				height: 36px;
+				left: 871px;
+				top: 185px;
+			}
+			#heatto-tmp {
+				position: absolute;
+				color: rgb(0, 0, 0);
+				font-family: fantasy;
+				font-size: 36px;
+				transform-style: preserve-3d;
+				left: 873px;
+				top: 332px;
+				width: 45px;
+				height: 44px;
+				transform-origin: -73.1719px -117px 0px;
+			}
+			#current-tmp {
+				position: absolute;
+				color: rgb(0, 0, 0);
+				transform-origin: 32px -23px 0px;
+				transform-style: preserve-3d;
+				left: 768px;
+				top: 238px;
+				width: 127px;
+				height: 82px;
+				font-family: fantasy;
+				font-size: 76px;
+				text-align: center;
+			}
+			#gwd-p-sg8c {
+				position: absolute;
+				font-family: fantasy;
+				text-align: center;
+				color: rgb(0, 0, 0);
+				transform-style: preserve-3d;
+				left: 674px;
+				top: 12px;
+				width: 348px;
+				height: 54px;
+				transform-origin: 126px 203px 0px;
+				font-size: 36px;
+			}
+		</style>
+		<script src="js/jquery.js"></script>
+		<script src="js/jquery-ui.js"></script>
+		<script>
+			$(function() {
+				var selected = 0;
+				$("#coolto").click(function() {
+					$("#coolto").css("background-color", "red");
+					if (selected == 2) {
+						$("#heatto").css("background-color", "");
+					}
+					selected = 1;
+				});
+
+				$("#heatto").click(function() {
+					$("#heatto").css("background-color", "red");
+					if (selected == 1) {
+						$("#coolto").css("background-color", "");
+					}
+					selected = 2;
+				});
+
+				$("#up-arrow").click(function() {
+					var url = window.location.href;
+					if (selected == 1) {
+						$tmp = parseInt($("#coolto-tmp").text().trim());
+						$tmp = $tmp + 1;
+						$("#coolto-tmp").html($tmp);
+						$.ajax({
+							url : url + "adjusttmp/?ctr=cooler&cmd=up",
+							context : document.body
+						}).done(function(data) {
+							//alert(data);
+						});
+					} else if (selected == 2) {
+						$tmp = parseInt($("#heatto-tmp").text().trim());
+						$tmp = $tmp + 1;
+						$("#heatto-tmp").html($tmp);
+						$.ajax({
+							url : url + "adjusttmp/?ctr=heater&cmd=up",
+							context : document.body
+						}).done(function(data) {
+							//alert(data);
+						});
+					}
+				});
+				$("#down-arrow").click(function() {
+					var url = window.location.href;
+					if (selected == 1) {
+						$tmp = parseInt($("#coolto-tmp").text().trim());
+						$tmp = $tmp - 1;
+						$("#coolto-tmp").html($tmp);
+						$.ajax({
+							url : url + "adjusttmp/?ctr=cooler&cmd=down",
+							context : document.body
+						}).done(function(data) {
+							//alert(data);
+						});
+					} else if (selected == 2) {
+						$tmp = parseInt($("#heatto-tmp").text().trim());
+						$tmp = $tmp - 1;
+						$("#heatto-tmp").html($tmp);
+						$.ajax({
+							url : url + "adjusttmp/?ctr=heater&cmd=down",
+							context : document.body
+						}).done(function(data) {
+							//alert(data);
+						});
+					}
+				});
+			});
+		</script>
+	</head>
+
+	<body style="">
+		<img src="bg.png" id="gwd-img-1spx">
+		<img src="up.png" id="up-arrow">
+		<img src="down.png" id="down-arrow">
+		<p id="coolto">
+			COOL TO
+		</p>
+		<p id="heatto">
+			HEAT TO
+		</p>
+		<p id="coolto-tmp">
+			74
+		</p>
+		<p id="heatto-tmp">
+			72
+		</p>
+		<p id="current-tmp">
+			70
+		</p>
+		<p id="gwd-p-sg8c">
+			iHarmony
+		</p>
+	</body>
+
+</html>

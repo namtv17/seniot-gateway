@@ -1,0 +1,26 @@
+{
+    "name"          : "node-red-node-seniot-iharrmony",
+    "version"       : "0.0.1",
+    "description"   : "A seniot-output node for Node-RED",
+    "dependencies"  : {
+    	"node-pid-controller":"^0.1.2",
+    	"express": "^4.12.0",
+    	"string.prototype.startswith": "0.2.0"
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/seniot/node-red-nodes/io/iharrmony/"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "iharrmony" ],
+    "node-red"      : {
+        "nodes"     : {
+            "iharrmony": "iharrmony.js"
+        }
+    },
+    "author": {
+        "name": "FPT-Software",
+        "email": "cuongdd1@fosft.com.vn",
+        "url": "http://fpt-software.vn"
+    }
+}
