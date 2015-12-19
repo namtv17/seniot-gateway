@@ -1,12 +1,10 @@
-
 module.exports = function(RED) {
 	"use strict";
 	var Device = require('lennox-device');
- 	var Client = Device.Client;
- 	var Message = Device.Message;
- 	var Http = Device.Http;
+	var Client = Device.Client;
+	var Message = Device.Message;
+	var Http = Device.Http;
 
-	
 	function lnxIoTHubNode(n) {
 		RED.nodes.createNode(this, n);
 		this.deviceName = n.name;
@@ -15,12 +13,12 @@ module.exports = function(RED) {
 		this.deviceId = n.deviceId;
 		this.deviceKey = n.deviceKey;
 		this.mode = n.mode;
-		
+
 		var self = this;
-		
+
 		this.connect = function() {
 			if (!self.device) {
-				var connectionString = 'HostName='+self.hostName+';DeviceId='+self.deviceId+';SharedAccessKeyName='+self.sharedAccessKeyName+';SharedAccessKey='+self.deviceKey+'';
+				var connectionString = 'HostName=' + self.hostName + ';DeviceId=' + self.deviceId + ';SharedAccessKeyName=' + self.sharedAccessKeyName + ';SharedAccessKey=' + self.deviceKey + '';
 
 				if (self.mode == "http") {
 					self.log("Attemp to create Azure IoT Hub http node to  " + self.deviceId);
@@ -29,10 +27,10 @@ module.exports = function(RED) {
 					self.log("Attemp to create Azure IoT Hub AMQP node to  " + self.deviceId);
 					self.device = new Client.fromConnectionString(connectionString, Device.Amqp);
 				} else {
-					
+
 				}
 			}
-			    
+
 		};
 	}
 
@@ -45,53 +43,46 @@ module.exports = function(RED) {
 		this.azureIot = RED.nodes.getNode(this.myDevice);
 		this.interval = n.interval;
 		var self = this;
-		
+
 		if (this.azureIot) {
 			self.azureIot.connect();
-			
-		    var connectionString = 'HostName='+this.azureIot.hostName+';SharedAccessKeyName='+this.azureIot.sharedAccessKeyName+';SharedAccessKey='+this.azureIot.deviceKey+'';
+
+			var connectionString = 'HostName=' + this.azureIot.hostName + ';SharedAccessKeyName=' + this.azureIot.sharedAccessKeyName + ';SharedAccessKey=' + this.azureIot.deviceKey + '';
 
 			if (this.azureIot.mode == "http") {
 				self.log('Creating lnxIoTHubNodeIn: http ' + this.azureIot.name + ' mode=' + this.azureIot.mode);
-				setInterval(function () {
-				  self.azureIot.device.receive(function (err, msg, res) {
-				    if (err) printResultFor('receive')(err, res);
-				    else if (res.statusCode !== 204) {
-				      console.log('lnxIoTHubNodeIn httpNode Received data: ' + msg.getData() + ' deviceId=' + self.azureIot.deviceId);
-				      self.send({
-							payload : JSON.parse(msg.getData())
-						});
-				
-				      self.azureIot.device.complete(msg, printResultFor('complete'));
-				    }
-				  });
+				setInterval(function() {
+					self.azureIot.device.receive(function(err, msg, res) {
+						if (err)
+							printResultFor('receive')(err, res);
+						else if (res.statusCode !== 204) {
+							console.log('lnxIoTHubNodeIn httpNode Received data: ' + msg.getData() + ' deviceId=' + self.azureIot.deviceId);
+							self.send({
+								payload : JSON.parse(msg.getData())
+							});
+
+							self.azureIot.device.complete(msg, printResultFor('complete'));
+						}
+					});
 				}, self.interval);
 			} else if (this.azureIot.mode == "amqp") {
 				self.log('Creating lnxIoTHubNodeIn: amqp ' + this.azureIot.name + ' mode=' + this.azureIot.mode);
-				self.azureIot.device.getReceiver(function (err, receiver)
-					{
-					  receiver.on('message', function (msg) {
-					    console.log('lnxIoTHubNodeIn AmqpNode data: '  + JSON.stringify(msg.body) + ' deviceId=' + self.azureIot.deviceId);
-					    self.send({
+				self.azureIot.device.getReceiver(function(err, receiver) {
+					receiver.on('message', function(msg) {
+						console.log('lnxIoTHubNodeIn AmqpNode data: ' + JSON.stringify(msg.body) + ' deviceId=' + self.azureIot.deviceId);
+						self.send({
 							payload : msg.body
 						});
-					    receiver.complete(msg, function() {
-					      console.log('completed');
-					    });
-					    // receiver.reject(msg, function() {
-					    //   console.log('rejected');
-					    // });
-					    // receiver.abandon(msg, function() {
-					    //   console.log('abandoned');
-					    // });
-					  });
-					  receiver.on('errorReceived', function(err)
-					  {
-					    console.warn(err);
-					  });
+						receiver.complete(msg, function() {
+							console.log('completed');
+						});
 					});
+					receiver.on('errorReceived', function(err) {
+						console.warn(err);
+					});
+				});
 			} else {
-				
+
 			}
 		} else {
 			this.error("lennox-hub in is not configured");
@@ -123,7 +114,7 @@ module.exports = function(RED) {
 				}
 				var message = new Message(msg.payload);
 				console.log("Sending message: " + message.getData());
-				
+
 				if (this.azureIot.mode == "http" || this.azureIot.mode == "amqp") {
 					self.azureIot.device.sendEvent(message, printResultFor('send'));
 				}
@@ -134,11 +125,14 @@ module.exports = function(RED) {
 	}
 
 	function printResultFor(op) {
-	  return function printResult(err, res) {
-	    if (err) console.log(op + ' error: ' + err.toString());
-	    if (res && (res.statusCode !== 204)) console.log(op + ' status: ' + res.statusCode + ' ' + res.statusMessage);
-	  };
+		return function printResult(err, res) {
+			if (err)
+				console.log(op + ' error: ' + err.toString());
+			if (res && (res.statusCode !== 204))
+				console.log(op + ' status: ' + res.statusCode + ' ' + res.statusMessage);
+		};
 	}
-	
+
+
 	RED.nodes.registerType("lennox-hub out", lnxIoTHubNodeOut);
 };

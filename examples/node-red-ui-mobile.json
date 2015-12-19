@@ -1,0 +1,315 @@
+[
+	{
+		"id": "94ca2faa.6b35d",
+		"type": "websocket-listener",
+		"path": "/ws/mobiui",
+		"wholemsg": "false"
+	}, {
+		"id": "39153d5d.c6eac2",
+		"type": "http in",
+		"z": "33ee1d7e.cc11e2",
+		"name": "http request: mobiUI",
+		"url": "/mobiui",
+		"method": "get",
+		"x": 130,
+		"y": 80,
+		"wires": [["4cfa2be5.b305d4"]
+		]
+	}, {
+		"id": "6df59608.920a68",
+		"type": "http response",
+		"z": "33ee1d7e.cc11e2",
+		"name": "http responce: mobiUI",
+		"x": 667,
+		"y": 80,
+		"wires": []
+	}, {
+		"id": "4cfa2be5.b305d4",
+		"type": "template",
+		"z": "33ee1d7e.cc11e2",
+		"name": "Mobile web-App controls chart v1.0 ",
+		"field": "",
+		"template": "<!DOCTYPE HTML>\n<html>\n<head>\n  <meta charset=\"utf-8\" />\n  <meta HTTP-EQUIV=\"CACHE-CONTROL\" CONTENT=\"NO-CACHE\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" /> \n  <meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n  <title>Node-RED mobi ui</title>\n  <link rel=\"stylesheet\" href=\"//code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.css\" />\n  <script src=\"//code.jquery.com/jquery-1.11.1.min.js\"></script>\n  <script src=\"//code.jquery.com/mobile/1.4.3/jquery.mobile-1.4.3.min.js\"></script>\n  <script src=\"//cdnjs.cloudflare.com/ajax/libs/highcharts/4.0.3/highcharts.js\"></script>\n  <script>//Node-Red mobi ui - LHG industrialinternet.co.uk\n\tconsole.log(\"NR mobi UI 1.0: Controls, Chart\");\n\tvar  schedule = null;\n\tvar itemLookup = null;\n\tvar statusMsg = false;\n\tvar  daiableWidgets = false; \n\tvar connected = false;\n\tvar wsUri=\"ws://\"+window.location.hostname+\":1880/ws/mobiui\";\n\tvar ws=null;\n\tfunction wsConn() {\n\t\tws = new WebSocket(wsUri);\n\t\tws.onmessage = function(m) {\n\t\t\tconsole.log('< from-node-red:',m.data);\n\t\t\tif (typeof(m.data) === \"string\" && m. data !== null){\n\t\t\t\tvar msg =JSON.parse(m.data);\n\t\t\t\tvar ftc = msg.id.substring(0, 3);\n\t\t\t\t//console.log(\"id:\"+msg.id+\" fct:\"+ftc);\n\t\t\t\tif(ftc== \"init\") {init( msg.v);}\n\t\t\t\tif(ftc==\"tsw\"){setFlip(msg.id,msg.v);}\n\t\t\t\tif(ftc==\"sld\"){setSlider(msg.id,msg.v);}\n\t\t\t\tif(ftc==\"val\"){setValue(msg.id,msg.v);}\n\t\t\t\t//if(ftc==\"cha\"){showCharts( msg.v.values,msg.v.colors,msg.v.engs,msg.v.tags,msg.v.names,msg.v.nos,msg.v.title,.msg.v.yTitle)};\n\t\t\t\tif(ftc==\"cha\"){showCharts( msg.v.values,msg.v.colors,msg.v.engs,msg.v.tags,msg.v.names,msg.v.nos,msg.v.title,msg.v.xtitle,msg.v.ytitle)};\n\t\t\t\tif(ftc==\"shd\"){setSchedule(msg.v);}\n\t\t\t\tif(ftc==\"sta\"){setStatus(msg.v.stMsg,msg.v.dur,msg.v.pri);}\n\t\t\t\tif(ftc==\"ack\"){clearReq();}\n\t\t\t}\n\t\t}\n\t\tws.onopen = function() { \n\t\t\tstatusMsg=false;\n\t\t\tif(daiableWidgets==true){enablePage();}\n\t\t\tsetStatus(\"Connected\",5,0); \n\t\t\tconnected = true;\n\t\t\tvar obj = {\"id\":\"init\",\"v\":1};\n\t\t\tgetRequest = JSON.stringify(obj); \t\n\t\t\tws.send(getRequest);\t\t\t// Request ui status from NR\n\t\t\tconsole.log(\"sent init requeset\");\n\t\t}\n\t\tws.onclose   = function()  {\n\t\t\tconsole.log('Node-RED connection closed: '+new Date().toUTCString()); \n\t\t\tconnected = false; \n\t\t\tws = null;\n\t\t\tsetStatus(\"No connection to server!\",0,1);\n\t\t\tif(daiableWidgets==false){disablePage();}\n\t\t\tsetTimeout(wsConn, 10000);\n\t\t}\t\n\t\tws.onerror  = function(){\n\t\t\t//console.log(\"connection error\");\n\t\t}\n\t}\n\t wsConn(); \t\t\t\t\t// connect to Node-RED server\n\tfunction init(values){ \t\t// initialise UI controls\n\t\tui = JSON.parse(values);\n\t\t for (var item in ui) {\n\t\t\t//console.log(\"item: \"+item);\n\t\t\tvar  m =  ui[item];\n\t\t\tinitSetters(m);\n\t\t}\n\t}\n\tfunction initSetters(msg){  \t// update UI widgets on connect \n\t\tconsole.log(\"init item id:\"+msg.id+\" value:\"+ msg.v);\n\t\tif(ftc==\"tsw\"){setFlip(msg.id,msg.v);}\n\t\tif(ftc==\"sld\"){setSlider(msg.id,msg.v);}\n\t\tif(ftc==\"val\"){setValue(msg.id,msg.v);}\n\t\tif(ftc==\"cha\"){showCharts( msg.v.values,msg.v.colors,msg.v.engs,msg.v.tags,msg.v.names,msg.v.nos,msg.v.title,msg.v.xTitle.msg.v.yTitle)};\n\t\tif(ftc==\"shd\"){setSchedule(msg.v);}\n\t\tif(ftc==\"sta\"){setStatus(msg.v);}\n\t}\n\tfunction setFlip(_id,_v){ \t// update flip \n\t\tmyselect = $(\"#\"+_id);\n\t\t//console.log(\"flip id:\"+_id+\" value:\"+_v+\" tyepof:\"+ typeof _v +\" state:\"+myselect.data('state')+\" req:\"+myselect.data('req'));\n\t\t//if(myselect.data('req')==1) return; // request on progress stops flip UI chatter \n\t\tif(myselect.data('state')!=_v){\n\t\t\tif(_v== true || _v=='true'){\n\t\t\t\tmyselect[0].selectedIndex=1; \n\t\t\t\tmyselect.data('state',1)\n\t\t\t} \n\t\t\telse { \n\t\t\t\tmyselect[0].selectedIndex=0;\n\t\t\t\tmyselect.data('state',0);\n\t\t\t}\n\t\t\tmyselect.flipswitch(\"refresh\");\n\t\t\t//myselect.stopImmediatePropagation();\n\t\t\t//console.log(\"jq:\"+myselect[0].selectedIndex+\" flip id:\"+_id+\" v:\"+value+\" data-state:\"+myselect.data('state'));\n\t\t}\n\t}\n\tfunction setSlider(_id,_v){\t// update slider\n\t\tmyselect = $(\"#\"+_id);\n\t\t myselect.val(_v);\n\t\t myselect.slider('refresh');\n\t}\n\tfunction setValue(_id,_v){\t// update value display\n\t\tmyselect = $(\"#\"+_id);\n\t\tmyselect.val(_v);\n\t}\n\tfunction showCharts(_data,colors,engs,tags,names,nos,cTitle,xTitle,yTitle){ // render chart\n\t\tvar seriesNo = [];\n\t\tfor (i=0; i<nos; i++){\n\t\t\tseriesNo.push({});  \n\t\t}\n\t\tconsole.log(\"seriesNo:\"+seriesNo);\n\t\tvar options = {\n\t\t\tchart: {\n\t\t\t\tmarginRight: 30,\n\t\t\t\trenderTo: 'container',\n\t\t\t\ttype: 'spline',\n\t\t\t\t},\n\t\t\t\t  title: {\n\t\t\t\t\t\ttext: cTitle\n\t\t\t\t},\n\t\t\t\t  xAxis: {\n\t\t\t\t\t type: 'datetime',\n\t\t\t\t\tdateTimeLabelFormats: {\n\t\t\t\t\t\thour: '%H',\n\t\t\t\t\t\tday: '%H <br/>%a %d %b'            \n\t\t\t\t\t},\n\t\t\t\t\tgridLineColor: '#C0C0C0',\n\t\t\t\t\ttickInterval: 1 * 3600 * 1000,\n\t\t\t\t\ttitle: {\n\t\t\t\t\t\ttext: xTitle\n\t\t\t\t\t},\n\t\t\t\t},\n\t\t\t\t yAxis: {\n\t\t\t\t\ttitle: {\n\t\t\t\t\t\ttext: yTitle\n\t\t\t\t\t},\n\t\t\t\t\tmin: 0,\n\t\t\t\t\tgridLineWidth: 0.5\t\t\t\n\t\t\t\t},\n\t\t\t\ttooltip: {\n\t\t\t\t\tformatter: function() {\n\t\t\t\t\t\teng=engs[this.series.options.id];\n\t\t\t\t\t\ttag=tags[this.series.options.id]; \n\t\t\t\t\t\treturn \"<strong>\"+ Highcharts.numberFormat(this.y, 1) +\"</strong>\"+eng+\" \"+tag+\"<br/>\"+ Highcharts.dateFormat('%a %d %b %H:%M:%S', this.x) +'<br/>';\t\t\t   \n\t\t\t\t\t}\n\t\t\t\t},\n\t\t\tseries: seriesNo\n\t\t};\n\t\tfor (i=0; i<nos; i++){\n\t\t\toptions.series[i].id=i;\n\t\t\toptions.series[i].color=colors[i];\n\t\t\toptions.series[i].lineWidth=1;\n\t\t\toptions.series[i].name= names[i];\n\t\t\toptions.series[i].data =  JSON.parse(_data[i]);\n\t\t}\n\t\tvar chart = new Highcharts.Chart(options);\n\t}\n\tfunction setSchedule(_v){\t// update schedule \n\t\t//console.log(\"shed:\"+_v);\n\t\tschedule  = JSON.parse(_v);\n\t\tconsole.log(\"shed:\"+schedule.items[0].id);\n\t}\n\tfunction setStatus(msg,dur,pri){\t // show msg on status bar\n\t\tif(statusMsg == true){return};\n\t\tstatusMsg= true;\n\t\tif(pri>0){\n\t\t\t//msg = \"<span class='alert'>\"+msg+\"</span>\";\n\t\t\t$(\"#statusView\").toggleClass(\"statusViewAlert\");\n\t\t} else {\n\t\t\t$(\"#statusView\").toggleClass(\"statusView\");\n\t\t}\n\t\t$(\"#statusView\").show();\n\t\t$(\"#statusView\").html(msg);\n\t\tdur = dur*1000;\n\t\tif(dur >0){\n\t\t\tsetTimeout(function(){$(\"#statusView\").hide(200);$(\"#statusView\").html(\"\"); statusMsg= false},dur)\n\t\t}\n\t}\t\n\tfunction disablePage(){\t\t\n\t\t$(\"[data-role=flipswitch]\").flipswitch( \"disable\" );\n\t\t//$(\"[data-role=range]\").disabled = true;\n\t\t$(\"[data-role=range]\").slider( \"option\", \"disabled\", true );\n\t\t$(\"[data-rel=popup]\").toggleClass(\"ui-disabled\");\n\t\tdaiableWidgets = true;\n\t}\n\tfunction enablePage(){\n\t\t$(\"[data-role=flipswitch]\").flipswitch( \"enable\" );\n\t\t$(\"[data-role=range]\").slider( \"option\", \"enabled\", true );\n\t\t$(\"[data-role=range]\").slider( \"enable\" );\n\t\t$(\"[data-rel=popup]\").toggleClass(\"ui-disabled\");\n\t\tdaiableWidgets = false;\n\t}\n\t$(function() { \t\t\t\t// UI event handlers           \n\t\t// Flip-switch change\n\t\t$(\"[data-role=flipswitch]\").bind( \"change\", function(event, ui) {\n\t\t\t//console.log(\"id:\"+this.id+\" val:\"+$(this).flipswitch().val()+\" state:\"+$(this).data('state')+\" req:\"+$(this).data('reqstate'));\n\t\t\tvar _value =  $(this).flipswitch().val();\n\t\t\tif($(this).data('state') != _value){\n\t\t\t\t$(this).data('state',_value);        \n\t\t\t\tvar obj = {\"id\":\"\"+this.id+\"\",\"v\":_value};\n\t\t\t\tsetActions = JSON.stringify(obj); \t\n\t\t\t\tws.send(setActions);\n\t\t\t}\n\t\t});\n\t\t// Slider end\n\t\t$(\".ui-slider\").bind( \"slidestop\", function(event, ui) {\n\t\t\tvar obj = {\"id\":\"\"+event.target.id+\"\",\"v\":event.target.value};\n\t\t\tsetActions = JSON.stringify(obj); \t\n\t\t\tws.send(setActions);\n\t\t});\n\t\t// Popup send\n\t\t$(\"[data-ui-type=pop-save]\").bind( \"click\", function(event, ui) {\n\t\t\tbid = this.id.split(\"_\");\n\t\t\twid =\"#\"+bid[0]+\"-pop\";\n\t\t\t$(wid ).popup( \"close\" );\n\t\t\ttid=\"#\"+bid[0];\n\t\t\tvar obj = {\"id\":\"\"+bid[0]+\"\",\"v\":$(tid ).val()};\n\t\t\tsetActions = JSON.stringify(obj); \t\n\t\t\tws.send(setActions);\n\t\t});\n\t\t// Grouped Radio buttons click\n\t\t$(\"[data-ui-type=shd-sel]\").bind( \"click\", function(event, ui) {\n\t\t\t$(\"[data-ui-type=shd-sel]\").prop( \"checked\", false ).checkboxradio( \"refresh\" );\n\t\t\t$(this ).prop( \"checked\", true ).checkboxradio( \"refresh\" );\n\t\t\tvar  item = this.id.split(\"-\");\n\t\t\tif( itemLookup == null){\n\t\t\t\t itemLookup =  item[1]-1;\n\t\t\t } else { // Copy item edits back obj\n\t\t\t\tschedule.items[itemLookup].tag\t\t =  $('#shd-tag').val();\n\t\t\t\tschedule.items[itemLookup].startTime =   $('#shd-st').val();\n\t\t\t\tschedule.items[itemLookup].startValue = $('#shd-st-v').val();\n\t\t\t\tschedule.items[itemLookup].endTime\t    = $('#shd-et').val();\n\t\t\t\tschedule.items[itemLookup].endValue\t    = $('#shd-et-v').val();\n\t\t\t\tfor (dow = 0; dow< 7; dow++) {\n\t\t\t\t\tvar  dowUI = '#shd-dow-'+dow;\n\t\t\t\t\tif( $(dowUI).prop( \"checked\")){\n\t\t\t\t\t\tschedule.items[itemLookup].dofWeek[dow] = 1 ;\n\t\t\t\t\t} else {\n\t\t\t\t\t\tschedule.items[itemLookup].dofWeek[dow] = 0 ;\n\t\t\t\t\t}\n\t\t\t\t} \n\t\t\t\titemLookup =  item[1]-1;\n\t\t\t }\n\t\t\tconsole.log(\"shed item\"+item[1]+\" lookup tag:\"+schedule.items[itemLookup].tag);\n\t\t\t$('#shd-tag').val(schedule.items[itemLookup].tag);\n\t\t\t$('#shd-st').val(schedule.items[itemLookup].startTime);\n\t\t\t$('#shd-st-v').val(schedule.items[itemLookup].startValue);\n\t\t\t$('#shd-et').val(schedule.items[itemLookup].endTime);\n\t\t\t$('#shd-et-v').val(schedule.items[itemLookup].endValue);\n\t\t\t//console.log(\"group radio - id:\"+ this.id+\" val:\"+$(this).val());\n\t\t\tfor (dow = 0; dow< 7; dow++) {\n\t\t\t\tvar  dowUI = '#shd-dow-'+dow;\n\t\t\t\tif (schedule.items[itemLookup].dofWeek[dow]==1){\n\t\t\t\t\t$(dowUI).prop( \"checked\", true ).checkboxradio( \"refresh\" )\n\t\t\t\t} else {\n\t\t\t\t\t$(dowUI).prop( \"checked\", false ).checkboxradio( \"refresh\" )\n\t\t\t\t}\n\t\t\t}\n\t\t});\n\t\t// Schedule save\n\t\t$( \"#shd-save\" ).bind( \"click\", function(event, ui) {\n\t\t\tconsole.log(\"shd-save\");\n\t\t\tif( itemLookup != null){\n\t\t\t\tschedule.items[itemLookup].tag\t\t =  $('#shd-tag').val();\n\t\t\t\tschedule.items[itemLookup].startTime =   $('#shd-st').val();\n\t\t\t\tschedule.items[itemLookup].startValue = $('#shd-st-v').val();\n\t\t\t\tschedule.items[itemLookup].endTime\t    = $('#shd-et').val();\n\t\t\t\tschedule.items[itemLookup].endValue\t    = $('#shd-et-v').val();\n\t\t\t\tfor (dow = 0; dow< 7; dow++) {\n\t\t\t\t\tvar  dowUI = '#shd-dow-'+dow;\n\t\t\t\t\tif( $(dowUI).prop( \"checked\")){\n\t\t\t\t\t\tschedule.items[itemLookup].dofWeek[dow] = 1 ;\n\t\t\t\t\t} else {\n\t\t\t\t\t\tschedule.items[itemLookup].dofWeek[dow] = 0 ;\n\t\t\t\t\t}\n\t\t\t\t} \n\t\t\t\tvar obj = {\"id\":\"shd-save\",\"v\":schedule};\n\t\t\t\tgetRequest = JSON.stringify(obj); \t\n\t\t\t\tws.send(getRequest);\n\t\t\t}\n\t\t});\n\t\t// Utills\n\t\tvar showHide=0;\n\t\t$(window).keydown(function(event) {\n\t\t\tif(event.shiftKey && event.keyCode == 68 ) { \n\t\t\t\t//console.log(event.keyCode);\n\t\t\t\tif(showHide==0){$(\"#foo\").show('slow');showHide=1;}else{$(\"#foo\").hide();showHide=0;}\n\t\t\t\tevent.preventDefault(); \n\t\t\t}\n\t\t});  \n\t\t$( document ).on( \"vclick\", \"#b1\", function() {\n\t\t\tlocation.reload();\n\t\t\tconsole.log(\"reload button\");\n\t\t});\t\n\t});\n      </script>\n  <style>\n\t\t@media only screen and (min-width: 521px){\n\t\t\t#header1 {width: 507px !important;  margin:auto auto !important; position: relative !important; border:1px solid #cccccc;}\n\t\t\t#c1 {width: 475px !important; min-height:500px !important; margin:auto auto !important; position: relative !important; border:1px solid #cccccc;}\n\t\t}\t\n\t\t.alert {font-weight: bold; color: #FF6C01;}\n\t\t.smallin .ui-input-text {width: 200px !important; color:red;}\n\t\tlegend.h1lb {padding:10px 0 5px 0;}\n\t\t.statusView {width: 100% !important;  margin:0px; position: relative !important; height:28px; padding:10px 0 0 0; background-color:#E9E9E9; font-weight:bold; -webkit-border-radius: 0.7em !important; border-radius: 0.7em; display:none; text-align:center; }\n\t\t.statusViewAlert {width: 100% !important;  margin:0px; position: relative !important; height:28px; padding:10px 0 0 0; background-color:#F8B584 !important; font-weight:bold; -webkit-border-radius: 0.7em !important; border-radius: 0.7em; display:none; text-align:center; }\n\t\t.ui-flipswitch {\"border-radius: 2em !important; -webkit-border-radius: 2em !important; -moz-border-radius: 2em !important;}\n\t\t/* Active button */\n\t\t.ui-page-theme-a .ui-btn.ui-btn-active,html .ui-bar-a .ui-btn.ui-btn-active,html .ui-body-a .ui-btn.ui-btn-active,html body .ui-group-theme-a .ui-btn.ui-btn-active,html head + body .ui-btn.ui-btn-a.ui-btn-active,\n\t\t/* Active checkbox icon */\n\t\t.ui-page-theme-a .ui-checkbox-on:after,html .ui-bar-a .ui-checkbox-on:after,html .ui-body-a .ui-checkbox-on:after,html body .ui-group-theme-a .ui-checkbox-on:after,.ui-btn.ui-checkbox-on.ui-btn-a:after,\n\t\t/* Active flipswitch background */.ui-page-theme-a .ui-flipswitch-active,html .ui-bar-a .ui-flipswitch-active,html .ui-body-a .ui-flipswitch-active,html body .ui-group-theme-a .ui-flipswitch-active,\n\t\thtml body .ui-flipswitch.ui-bar-a.ui-flipswitch-active,\n\t\t/* Active slider track */\n\t\t.ui-page-theme-a .ui-slider-track .ui-btn-active,html .ui-bar-a .ui-slider-track .ui-btn-active,html .ui-body-a .ui-slider-track .ui-btn-active,html body .ui-group-theme-a .ui-slider-track .ui-btn-active,html body div.ui-slider-track.ui-body-a .ui-btn-active {\n\t\t\tbackground-color: \t\t#FF6C01 !important;\n\t\t\tborder-color:\t \t\t#FF6C01 !important;\n\t\t\tcolor: \t\t\t\t\t#fff /*{a-active-color}*/;\n\t\t\ttext-shadow: 0 /*{a-active-shadow-x}*/ 1px /*{a-active-shadow-y}*/ 0 /*{a-active-shadow-radius}*/ #005599 /*{a-active-shadow-color}*/;\n\t\t}\n   </style>\n</head>\n<body>\n  <!-- Home -->\n  <div data-role=\"page\" id=\"controls-charts\">\n    <div id=\"header1\" data-role=\"header\">\n        <h3 style=\"color:#FF6C01\">Node-RED mobi ui</h3>\n\t\t<a href=\"#\" title=\"reload\" class=\"ui-btn ui-shadow ui-corner-all ui-icon-refresh ui-btn-icon-notext ui-btn-inline\" id=\"b1\" >Reload</a>\t\n\t</div>\t\n\t<div id=\"c1\" class=\"ui-content\">\n\t<div id=\"statusView\" style=\"\"></div>\t\n\t\t<div class=\"ui-field-contain\">\n\t\t\t<label for=\"tsw-1\">flip switch 1</label>\n\t\t\t<select id=\"tsw-1\" data-role=\"flipswitch\" data-state=\"0\" data-req=\"\">\n\t\t\t  <option value=\"0\">Off</option>\n\t\t\t  <option value=\"1\">On</option>\n\t\t\t</select>\n\t\t</div>\n\t\t<div class=\"ui-field-contain\">\n\t\t\t<label for=\"tsw-2\">flip switch 2</label>\n\t\t\t<select id=\"tsw-2\" data-role=\"flipswitch\" data-state=\"0\" data-req=\"\">\n\t\t\t  <option value=\"0\">Off</option>\n\t\t\t  <option value=\"1\">On</option>\n\t\t\t</select>\n\t\t</div>\n\t\t<div class=\"ui-field-contain\">\n\t\t\t<label for=\"sld-1\">slider 1</label>\n\t\t\t<input id=\"sld-1\" type=\"range\" data-role=\"range\" value=\"0\" min=\"0\" max=\"100\" step=\"1\" data-highlight=\"true\" />\n\t\t</div>\n\t\t<div class=\"ui-field-contain\">\n\t\t\t<label for=\"val-1\">value 1</label>\n\t\t\t<input type=\"text\" id=\"val-1\" placeholder=\"\" value=\"\" readonly=\"readonly\">\n\t\t</div>\n\t\t<div class=\"ui-field-contain\">   \n\t\t\t<label for=\"txt-1\">Message</label>\n\t\t\t<a  href=\"#txt-1-pop\" data-rel=\"popup\" data-position-to=\"window\" class=\"ui-btn ui-corner-all ui-shadow ui-btn-inline  ui-mini ui-icon-edit ui-btn-icon-left ui-btn-a\" data-transition=\"pop\">Edit</a>\n\t\t\t<div id=\"txt-1-pop\"  data-role=\"popup\"  data-theme=\"a\" class=\"ui-corner-all\" style=\"padding:15px;\">\t\t\n\t\t\t\t<a href=\"#\" data-rel=\"back\" data-role=\"button\" data-theme=\"a\" data-icon=\"delete\" data-iconpos=\"notext\" class=\"ui-btn-left\">Close</a>\n\t\t\t\t<h4>Message</h4>\n\t\t\t\t<textarea id=\"txt-1\" cols=\"30\" rows=\"60\" style=\"width:100%; padding-top:10px;\" maxlength=140></textarea>\n\t\t\t\t<button   id=\"txt-1_save\" data-ui-type=\"pop-save\" type=\"submit\" class=\"ui-btn ui-corner-all ui-shadow ui-btn-a ui-btn-icon-left ui-mini ui-icon-check\">Send</button>\n\t\t\t</div>\n\t\t</div>\n\t\t<div id=\"container\" style=\"width: 100%; margin-left:-15px;\"></div>\t\t\n\t</div><!-- eof content -->\n   </div><!-- eof page -->\n  </body>\n</html>",
+		"x": 399,
+		"y": 79.99999237060547,
+		"wires": [["6df59608.920a68"]
+		]
+	}, {
+		"id": "8dac258f.7253d8",
+		"type": "function",
+		"z": "33ee1d7e.cc11e2",
+		"name": "ui dispatcher",
+		"func": "/* \tUI dispatcher v0.1a 23/06/2014\n\tRecives changes from UI and actions them */\nvar obj = JSON.parse(msg.payload);\ndelete msg.payload;\ndelete msg._session;\n\n// toggle switch tsw-1\t- output 1 \nif(obj.id==\"tsw-1\"){\n\tmsg.id = obj.id; \t\n\tmsg.state = obj.v;\t\n\treturn [msg, null, null, null];\n\n// toggle switch tsw-2\t- output 2 \n} else if(obj.id==\"tsw-2\"){\n\tmsg.id = obj.id; \t\t\n\tmsg.state = obj.v;\t\n\treturn [null, msg, null];\n\t\n// slider  sld-1 \t\t- output 3 \t\n} else if(obj.id==\"sld-1\"){\n\tmsg.id = obj.id; \n\tmsg.value = obj.v;\t\n\treturn [null, null, msg, null];\n\n// txt popup txt-1 \t\t- output 4 \t\n} else if(obj.id==\"txt-1\"){\n\tmsg.id = obj.id; \n\tmsg.value = obj.v;\t\n\treturn [null, null, null, msg];\n\n//  do nothing\n} else {\n\treturn [null, null, null, null];\n}",
+		"outputs": "4",
+		"x": 360,
+		"y": 503,
+		"wires": [["5ef78bec.a10874"],["5cb37281.a34c8c"],["e10ad5d7.1ef528"],["2019bd97.dfe642"]
+		]
+	}, {
+		"id": "fd15f06a.02ea1",
+		"type": "inject",
+		"z": "33ee1d7e.cc11e2",
+		"name": "pulse",
+		"topic": "10",
+		"payload": "",
+		"payloadType": "date",
+		"repeat": "14400",
+		"crontab": "",
+		"once": false,
+		"x": 117,
+		"y": 283,
+		"wires": [["a3ff50a9.5c00b"]
+		]
+	}, {
+		"id": "a3ff50a9.5c00b",
+		"type": "function",
+		"z": "33ee1d7e.cc11e2",
+		"name": "move slider ui: sld-1",
+		"func": "context.count = parseInt(context.count) || 0; \ncontext.count = parseInt(context.count) + parseInt(msg.topic);\nif(context.count >100){context.count=0;}\nmsg.payload = {id:\"sld-1\", v: context.count}; \nreturn msg;",
+		"outputs": 1,
+		"x": 395,
+		"y": 284,
+		"wires": [["f9564ce6.06a9b"]
+		]
+	}, {
+		"id": "7732acef.88cd54",
+		"type": "function",
+		"z": "33ee1d7e.cc11e2",
+		"name": "toggle  swithch ui: tsw-1",
+		"func": "context.state = context.state || 0; \nif(context.state==1){\n\tcontext.state=0;\n} else {\n\tcontext.state=1;\n}\nmsg.payload = {id:\"tsw-1\", v: context.state}; \nreturn msg;",
+		"outputs": 1,
+		"x": 400,
+		"y": 201,
+		"wires": [["f9564ce6.06a9b"]
+		]
+	}, {
+		"id": "109a8b87.ef6574",
+		"type": "inject",
+		"z": "33ee1d7e.cc11e2",
+		"name": "toggle",
+		"topic": "",
+		"payload": "",
+		"payloadType": "date",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 117,
+		"y": 202,
+		"wires": [["7732acef.88cd54"]
+		]
+	}, {
+		"id": "5ef78bec.a10874",
+		"type": "debug",
+		"z": "33ee1d7e.cc11e2",
+		"name": "ui: tsw-1 toggle switch",
+		"active": true,
+		"console": "false",
+		"complete": "true",
+		"x": 678,
+		"y": 487,
+		"wires": []
+	}, {
+		"id": "5cb37281.a34c8c",
+		"type": "debug",
+		"z": "33ee1d7e.cc11e2",
+		"name": "ui: tsw-2 toggle switch",
+		"active": true,
+		"console": "false",
+		"complete": "true",
+		"x": 679,
+		"y": 523,
+		"wires": []
+	}, {
+		"id": "e10ad5d7.1ef528",
+		"type": "debug",
+		"z": "33ee1d7e.cc11e2",
+		"name": "u1: sld-1 slider",
+		"active": true,
+		"console": "false",
+		"complete": "true",
+		"x": 660,
+		"y": 559,
+		"wires": []
+	}, {
+		"id": "87cce5c6.783318",
+		"type": "comment",
+		"z": "33ee1d7e.cc11e2",
+		"name": "Simple mobile web ui",
+		"info": "Uses Jquery mobile to provide display and sets Node-RED values",
+		"x": 1210,
+		"y": 29,
+		"wires": []
+	}, {
+		"id": "5f9116d6.a06ee8",
+		"type": "comment",
+		"z": "33ee1d7e.cc11e2",
+		"name": "Update mobi UI - web scokets",
+		"info": "",
+		"x": 158,
+		"y": 154,
+		"wires": []
+	}, {
+		"id": "dbaa3f64.2455c",
+		"type": "comment",
+		"z": "33ee1d7e.cc11e2",
+		"name": "Dispatch mobi UI commands - web sockets",
+		"info": "",
+		"x": 195,
+		"y": 448,
+		"wires": []
+	}, {
+		"id": "f9564ce6.06a9b",
+		"type": "websocket out",
+		"z": "33ee1d7e.cc11e2",
+		"name": "web socket mobiUI - out",
+		"server": "94ca2faa.6b35d",
+		"x": 686,
+		"y": 198,
+		"wires": []
+	}, {
+		"id": "e3620e18.1c9df",
+		"type": "websocket in",
+		"z": "33ee1d7e.cc11e2",
+		"name": "web socket mobiUI - in",
+		"server": "94ca2faa.6b35d",
+		"x": 135,
+		"y": 503,
+		"wires": [["8dac258f.7253d8", "d3300a2b.2ccff8"]
+		]
+	}, {
+		"id": "c4b47339.3b4b9",
+		"type": "function",
+		"z": "33ee1d7e.cc11e2",
+		"name": "set ui value val-1",
+		"func": "msg.payload = {id:\"val-1\", v: parseFloat(msg.topic).toFixed(1)+\"C\"};\nreturn msg;",
+		"outputs": 1,
+		"x": 387,
+		"y": 320,
+		"wires": [["f9564ce6.06a9b"]
+		]
+	}, {
+		"id": "fbe65a54.0419a8",
+		"type": "inject",
+		"z": "33ee1d7e.cc11e2",
+		"name": "set",
+		"topic": "22.12",
+		"payload": "",
+		"payloadType": "date",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 119,
+		"y": 321,
+		"wires": [["c4b47339.3b4b9"]
+		]
+	}, {
+		"id": "56f18d73.a90e74",
+		"type": "comment",
+		"z": "33ee1d7e.cc11e2",
+		"name": "server web app",
+		"info": "",
+		"x": 114,
+		"y": 42,
+		"wires": []
+	}, {
+		"id": "86dbe71f.792418",
+		"type": "inject",
+		"z": "33ee1d7e.cc11e2",
+		"name": "toggle",
+		"topic": "",
+		"payload": "",
+		"payloadType": "date",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 118,
+		"y": 243,
+		"wires": [["ec058b81.13fa78"]
+		]
+	}, {
+		"id": "ec058b81.13fa78",
+		"type": "function",
+		"z": "33ee1d7e.cc11e2",
+		"name": "toggle  swithch ui: tsw-2",
+		"func": "context.state = context.state || 0; \nif(context.state==1){\n\tcontext.state=0;\n} else {\n\tcontext.state=1;\n}\nmsg.payload = {id:\"tsw-2\", v: context.state}; \nreturn msg;",
+		"outputs": 1,
+		"x": 401,
+		"y": 242,
+		"wires": [["f9564ce6.06a9b"]
+		]
+	}, {
+		"id": "ed3f4a49.12c0b8",
+		"type": "inject",
+		"z": "33ee1d7e.cc11e2",
+		"name": "set",
+		"topic": "a message from Node-RED!",
+		"payload": "",
+		"payloadType": "date",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 117,
+		"y": 357,
+		"wires": [["6c00d6a3.93ff28"]
+		]
+	}, {
+		"id": "6c00d6a3.93ff28",
+		"type": "function",
+		"z": "33ee1d7e.cc11e2",
+		"name": "set ui status msg",
+		"func": "var statusMsg = {stMsg: msg.topic, dur: 5, pri:0};\nmsg.payload = {id:\"sta-1\", v:statusMsg};\nreturn msg;",
+		"outputs": 1,
+		"x": 384,
+		"y": 357,
+		"wires": [["f9564ce6.06a9b"]
+		]
+	}, {
+		"id": "a945e2c2.56ba2",
+		"type": "inject",
+		"z": "33ee1d7e.cc11e2",
+		"name": "set",
+		"topic": "",
+		"payload": "",
+		"payloadType": "date",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 117,
+		"y": 394,
+		"wires": [["b75c9aa5.48a368"]
+		]
+	}, {
+		"id": "b75c9aa5.48a368",
+		"type": "function",
+		"z": "33ee1d7e.cc11e2",
+		"name": "show a chart",
+		"func": "var chart = {\n  \"values\": [\n    \"[[1404954324794,22.7],[1404955378037,22.7],[1404956431240,22.7],[1404957484513,22.6],[1404958537898,22.6],[1404959591350,22.6],[1404960644836,22.4],[1404961698366,22.4],[1404962752021,22.4],[1404963805731,22.4],[1404965913194,22.3],[1404966967038,22.1],[1404968020953,22.1],[1404969074807,22.1],[1404970128704,22.1],[1404971182719,22.1],[1404972236829,22.1],[1404973290883,22.1],[1404974345054,22.0]]\",\n    \"[[1404954324794,40.0],[1404955378037,40.0],[1404956431240,40.0],[1404957484513,40.0],[1404958537898,40.0],[1404959591350,40.0],[1404960644836,40.0],[1404961698366,40.0],[1404962752021,40.0],[1404963805731,40.0],[1404965913194,40.0],[1404966967038,40.0],[1404968020953,40.0],[1404969074807,40.0],[1404970128704,40.0],[1404971182719,40.0],[1404972236829,40.0],[1404973290883,40.0],[1404974345054,40.0]]\"\n  ],\n   \"engs\": [\n    \"C\",\n    \"C\"\n  ],\n    \"colors\": [\n    \"#615B5B\",\n    \"#EE4900\"\n  ],\n  \"names\": [\n    \"EnOcean: office temp\",\n    \"EnOcean: office SP\"\n  ],\n  \"tags\": [\n    \"v3\",\n    \"v4\"\n  ],\n   \"nos\": 2,\n   \"title\": \"Office temp & SP\",\n   \"xtitle\": \"Time\",\n   \"ytitle\": \"C\"\n}\nmsg.payload = {id:\"chart-1\", v: chart}; \nreturn msg; ",
+		"outputs": 1,
+		"x": 374,
+		"y": 393,
+		"wires": [["f9564ce6.06a9b"]
+		]
+	}, {
+		"id": "2019bd97.dfe642",
+		"type": "debug",
+		"z": "33ee1d7e.cc11e2",
+		"name": "txt-1 popup large text",
+		"active": true,
+		"console": "false",
+		"complete": "true",
+		"x": 680,
+		"y": 595,
+		"wires": []
+	}, {
+		"id": "d3300a2b.2ccff8",
+		"type": "debug",
+		"z": "33ee1d7e.cc11e2",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "true",
+		"x": 348,
+		"y": 571,
+		"wires": []
+	}
+]
