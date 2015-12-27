@@ -1,0 +1,73 @@
+[
+  {
+    "DeviceProperties": {
+      "DeviceID": "45be4c58-405f-4538-95c3-0d4093c343a7",
+      "HubEnabledState": true,
+      "CreatedTime": "2015-12-19T22:33:44.608054Z",
+      "DeviceState": "normal",
+      "UpdatedTime": "2015-12-19T22:49:21.2759131Z",
+      "Manufacturer": "Contoso Inc.",
+      "ModelNumber": "MD-367",
+      "SerialNumber": "SER8247",
+      "FirmwareVersion": "1.96",
+      "Platform": "Plat-64",
+      "Processor": "i3-595",
+      "InstalledRAM": "65 MB",
+      "Latitude": 47.593307,
+      "Longitude": -122.332165
+    },
+    "Commands": [
+      {
+        "Name": "PingDevice",
+        "Parameters": null
+      },
+      {
+        "Name": "StartTelemetry",
+        "Parameters": null
+      },
+      {
+        "Name": "StopTelemetry",
+        "Parameters": null
+      },
+      {
+        "Name": "ChangeSetPointTemp",
+        "Parameters": [
+          {
+            "Name": "SetPointTemp",
+            "Type": "double"
+          }
+        ]
+      },
+      {
+        "Name": "DiagnosticTelemetry",
+        "Parameters": [
+          {
+            "Name": "Active",
+            "Type": "boolean"
+          }
+        ]
+      },
+      {
+        "Name": "ChangeDeviceState",
+        "Parameters": [
+          {
+            "Name": "DeviceState",
+            "Type": "string"
+          }
+        ]
+      }
+    ],
+    "CommandHistory": [],
+    "IsSimulatedDevice": 1,
+    "Version": "1.0",
+    "ObjectType": "DeviceInfo",
+    "IoTHub": {
+      "MessageId": null,
+      "CorrelationId": null,
+      "ConnectionDeviceId": "45be4c58-405f-4538-95c3-0d4093c343a7",
+      "ConnectionDeviceGenerationId": "635861612247756759",
+      "EnqueuedTime": "0001-01-01T00:00:00",
+      "StreamId": null
+    }
+  }
+]
