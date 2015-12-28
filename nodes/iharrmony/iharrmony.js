@@ -50,14 +50,17 @@ module.exports = function(RED) {
 
 		setInterval(function() {
 			if (!self.goalReached) {
-				var output = Math.min(self.coolto, self.heatto) + Math.random() * Math.abs(self.coolto - self.heatto);
+				var output = self.temperature;
 				var input = self.controller.update(output);
-				console.log(output + " - " + input + "    " + self.name);
-				self.temperature = self.temperature  - input;
+				self.temperature = self.temperature + input/5;
+				//console.log(output + " - " + input + "    " + self.name + " controller target = " + self.controller.target);
+				console.log(self.temperature + " - " + input);
+				//self.temperature = self.temperature  - input;
 				self.send({
 					payload : {
 						name : self.name,
-						value : input
+						correction : input,
+						temperature : self.temperature
 					}
 				});
 				//applyInputToActuator(input);
