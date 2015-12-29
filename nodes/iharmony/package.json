@@ -1,5 +1,5 @@
 {
-    "name"          : "node-red-node-seniot-iharrmony",
+    "name"          : "node-red-node-seniot-iharmony",
     "version"       : "0.0.1",
     "description"   : "A seniot-output node for Node-RED",
     "dependencies"  : {
@@ -9,13 +9,13 @@
     },
     "repository" : {
         "type":"git",
-        "url":"https://github.com/seniot/node-red-nodes/io/iharrmony/"
+        "url":"https://github.com/seniot/node-red-nodes/io/iharmony/"
     },
     "license": "Apache-2.0",
-    "keywords": [ "node-red", "iharrmony" ],
+    "keywords": [ "node-red", "iharmony" ],
     "node-red"      : {
         "nodes"     : {
-            "iharrmony": "iharrmony.js"
+            "iharrmony": "iharmony.js"
         }
     },
     "author": {

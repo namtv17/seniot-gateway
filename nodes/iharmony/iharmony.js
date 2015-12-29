@@ -1,21 +1,7 @@
-/**
- * Copyright 2015 Urbiworx
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- **/
+
 var express = require("express");
 var Controller = require('node-pid-controller');
-require('String.prototype.startsWith');
+require('string.prototype.startswith');
 
 module.exports = function(RED) {
 	"use strict";
@@ -23,10 +9,10 @@ module.exports = function(RED) {
 	var pendingresponses = new Array();
 	var nodes = new Array();
 
-	function iharrmony(n) {
+	function iharmony(n) {
 		RED.nodes.createNode(this, n);
 		this.name = n.name.trim();
-		this.url = "/iharrmony/" + this.name;
+		this.url = "/iharmony/" + this.name;
 
 		nodes.push(this);
 
@@ -36,7 +22,7 @@ module.exports = function(RED) {
 		
 		var ctr = new Controller({
 			k_p : 0.25,
-			k_i : 0.01,
+			k_i : 0.5,
 			k_d : 0.01,
 			dt : 1
 		});
@@ -107,7 +93,7 @@ module.exports = function(RED) {
 					}));
 				} else {
 					res.end(JSON.stringify({
-						error : "iHarrmony node not found " + url
+						error : "iharmony node not found " + url
 					}));
 				}
 			});
@@ -162,16 +148,16 @@ module.exports = function(RED) {
 					}));
 				} else {
 					res.end(JSON.stringify({
-						error : "iHarrmony node not found " + url
+						error : "iharmony node not found " + url
 					}));
 				}
 			});
 		} else {
-			this.error("iharrmony in is not configured");
+			this.error("iharmony in is not configured");
 		}
 
 	}
 
 
-	RED.nodes.registerType("iharrmony", iharrmony);
+	RED.nodes.registerType("iharmony", iharmony);
 };

@@ -1,0 +1,23 @@
+{
+    "name"          : "node-red-node-seniot-seniot-output",
+    "version"       : "0.0.1",
+    "description"   : "A seniot-output node for Node-RED",
+    "dependencies"  : {
+    },
+    "repository" : {
+        "type":"git",
+        "url":"https://github.com/seniot/node-red-nodes/io/seniot-output/"
+    },
+    "license": "Apache-2.0",
+    "keywords": [ "node-red", "seniot-output" ],
+    "node-red"      : {
+        "nodes"     : {
+            "azure-iot": "seniot-output.js"
+        }
+    },
+    "author": {
+        "name": "FPT-Software",
+        "email": "cuongdd1@fosft.com.vn",
+        "url": "http://fpt-software.vn"
+    }
+}
