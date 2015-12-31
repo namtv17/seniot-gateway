@@ -1,0 +1,167 @@
+[
+	{
+		"id": "b0f572a3.4f0a9",
+		"type": "http response",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"x": 722,
+		"y": 265,
+		"wires": []
+	}, {
+		"id": "b8a3acb.f475c5",
+		"type": "http in",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"url": "/device/6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C/status/INITIATED",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 236.5,
+		"y": 71,
+		"wires": [["e1fb8dee.1e047"]
+		]
+	}, {
+		"id": "e1fb8dee.1e047",
+		"type": "function",
+		"z": "f83ed70.f07c128",
+		"name": "INITIATED",
+		"func": "msg.error = null;\nmsg.payload = {\n    status : \"INITIATED\",\n    pinCode : \"123456\"\n};\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 606,
+		"y": 117,
+		"wires": [["b0f572a3.4f0a9"]
+		]
+	}, {
+		"id": "2d4a7dc4.d2b582",
+		"type": "http in",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"url": "/device/6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C/status/REGISTERED",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 282,
+		"y": 203,
+		"wires": [["d48e2e41.2b71d"]
+		]
+	}, {
+		"id": "d48e2e41.2b71d",
+		"type": "function",
+		"z": "f83ed70.f07c128",
+		"name": "REGISTERED",
+		"func": "msg.error = null;\nmsg.payload = {\n    status : \"REGISTERED\"\n};\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 500,
+		"y": 290,
+		"wires": [["b0f572a3.4f0a9"]
+		]
+	}, {
+		"id": "3579cf9b.ca863",
+		"type": "http in",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"url": "/device/6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C/key",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 228.5,
+		"y": 404,
+		"wires": [["4a7870aa.b5879"]
+		]
+	}, {
+		"id": "4a7870aa.b5879",
+		"type": "function",
+		"z": "f83ed70.f07c128",
+		"name": "SendDeviceKey",
+		"func": "msg.payload = {\n    \"HostName\": \"LennoxLBAS-Hub.azure-devices.net\",\n    \"DeviceId\": \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\",\n    \"SharedAccessKeyName\" : \"device\",\n    \"PrimaryKey\": \"u8iOK9dJJi2shUPnBNFzRQ==\"\n};\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 500,
+		"y": 349,
+		"wires": [["b0f572a3.4f0a9"]
+		]
+	}, {
+		"id": "5be77103.a4189",
+		"type": "http in",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"url": "/device/6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C/status/INSTALLED",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 278,
+		"y": 509,
+		"wires": [["de0379bc.21fc88"]
+		]
+	}, {
+		"id": "de0379bc.21fc88",
+		"type": "function",
+		"z": "f83ed70.f07c128",
+		"name": "INSTALLED",
+		"func": "msg.error = null;\nmsg.payload = {\n    status : \"INSTALLED\"\n};\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 579,
+		"y": 409,
+		"wires": [["b0f572a3.4f0a9"]
+		]
+	}, {
+		"id": "fc442b3b.03bbd8",
+		"type": "http in",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"url": "/device/6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C/status/READYTOUSE",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 278,
+		"y": 588,
+		"wires": [["36ddfd35.c92202"]
+		]
+	}, {
+		"id": "36ddfd35.c92202",
+		"type": "function",
+		"z": "f83ed70.f07c128",
+		"name": "IN-USED",
+		"func": "msg.error = null;\nmsg.payload = {\n    status : \"IN-USED\"\n};\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 662,
+		"y": 541,
+		"wires": [["b0f572a3.4f0a9"]
+		]
+	}, {
+		"id": "6b5fdd7e.94a024",
+		"type": "http in",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"url": "/device/6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C/status/LOCKED",
+		"method": "get",
+		"swaggerDoc": "",
+		"x": 276,
+		"y": 672,
+		"wires": [["4fbbbc5f.b04444"]
+		]
+	}, {
+		"id": "4fbbbc5f.b04444",
+		"type": "function",
+		"z": "f83ed70.f07c128",
+		"name": "LOCKED",
+		"func": "msg.error = null;\nmsg.payload = {\n    status : \"LOCKED\"\n};\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 660,
+		"y": 615,
+		"wires": [["b0f572a3.4f0a9"]
+		]
+	}, {
+		"id": "6a3728d1.95c8d8",
+		"type": "http in",
+		"z": "f83ed70.f07c128",
+		"name": "",
+		"url": "/device/6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C/init",
+		"method": "post",
+		"swaggerDoc": "",
+		"x": 271.5,
+		"y": 26,
+		"wires": [["e1fb8dee.1e047"]
+		]
+	}
+]

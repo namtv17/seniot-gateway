@@ -1,0 +1,81 @@
+[
+	{
+		"id": "1162136.e98096d",
+		"type": "websocket-listener",
+		"z": "74f4db9a.8b0b24",
+		"path": "/ws/xc25",
+		"wholemsg": "false"
+	}, {
+		"id": "cea7b25f.31585",
+		"type": "websocket-listener",
+		"z": "74f4db9a.8b0b24",
+		"path": "/ws/thermostat",
+		"wholemsg": "false"
+	}, {
+		"id": "e5dd7183.1a229",
+		"type": "websocket in",
+		"z": "74f4db9a.8b0b24",
+		"name": "Thermostat-IN",
+		"server": "cea7b25f.31585",
+		"client": "",
+		"x": 107,
+		"y": 31,
+		"wires": [["85d6ecdf.7a291"]
+		]
+	}, {
+		"id": "3a7394bf.c58c6c",
+		"type": "websocket out",
+		"z": "74f4db9a.8b0b24",
+		"name": "Thermostat-OUT",
+		"server": "cea7b25f.31585",
+		"client": "",
+		"x": 557,
+		"y": 32,
+		"wires": []
+	}, {
+		"id": "85d6ecdf.7a291",
+		"type": "function",
+		"z": "74f4db9a.8b0b24",
+		"name": "",
+		"func": "msg.payload = JSON.parse(msg.payload);\nif (msg.payload.type == \"update\") {\n    msg.payload.type = \"set\";\n}\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 314,
+		"y": 72,
+		"wires": [["3a7394bf.c58c6c"]
+		]
+	}, {
+		"id": "4ffc2a8d.6efeac",
+		"type": "websocket in",
+		"z": "74f4db9a.8b0b24",
+		"name": "XC25-IN",
+		"server": "1162136.e98096d",
+		"client": "",
+		"x": 107.33332824707031,
+		"y": 172.33334350585938,
+		"wires": [["da6f9c0d.e89de8"]
+		]
+	}, {
+		"id": "6b8887d7.6e977",
+		"type": "websocket out",
+		"z": "74f4db9a.8b0b24",
+		"name": "XC25-OUT",
+		"server": "1162136.e98096d",
+		"client": "",
+		"x": 557.3333282470703,
+		"y": 173.33334350585938,
+		"wires": []
+	}, {
+		"id": "da6f9c0d.e89de8",
+		"type": "function",
+		"z": "74f4db9a.8b0b24",
+		"name": "",
+		"func": "msg.payload = JSON.parse(msg.payload);\nif (msg.payload.type == \"update\") {\n    msg.payload.type = \"set\";\n}\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 314.3333282470703,
+		"y": 213.33334350585938,
+		"wires": [["6b8887d7.6e977"]
+		]
+	}
+]
