@@ -498,7 +498,7 @@
 		"name": "",
 		"active": true,
 		"console": "false",
-		"complete": "payload",
+		"complete": "true",
 		"x": 1363,
 		"y": 328,
 		"wires": []
@@ -532,22 +532,11 @@
 		"z": "bf0637c8.40f9c8",
 		"name": "",
 		"filename": "",
-		"appendNewline": true,
-		"createDir": false,
+		"appendNewline": false,
+		"createDir": true,
 		"overwriteFile": "true",
-		"x": 1215,
+		"x": 1350,
 		"y": 160,
-		"wires": []
-	}, {
-		"id": "f2415df3.0dbea",
-		"type": "debug",
-		"z": "bf0637c8.40f9c8",
-		"name": "",
-		"active": true,
-		"console": "false",
-		"complete": "true",
-		"x": 1113,
-		"y": 362,
 		"wires": []
 	}, {
 		"id": "8e731230.718cf",
@@ -558,7 +547,34 @@
 		"format": "utf8",
 		"x": 840,
 		"y": 216,
-		"wires": [["a395e933.5c6a18", "f2415df3.0dbea"]
+		"wires": [["a395e933.5c6a18"]
+		]
+	}, {
+		"id": "21e49476.de1b6c",
+		"type": "inject",
+		"z": "bf0637c8.40f9c8",
+		"name": "",
+		"topic": "",
+		"payload": "{ \"status\": \"INSTALLED\" }",
+		"payloadType": "string",
+		"repeat": "",
+		"crontab": "",
+		"once": false,
+		"x": 1252,
+		"y": 29,
+		"wires": [["ef5b8653.10a478"]
+		]
+	}, {
+		"id": "ef5b8653.10a478",
+		"type": "function",
+		"z": "bf0637c8.40f9c8",
+		"name": "",
+		"func": "msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\nmsg.payload = {\n    \"HostName\": \"LennoxLBAS-Hub.azure-devices.net\",\n    \"DeviceId\": \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\",\n    \"SharedAccessKeyName\" : \"device\",\n    \"PrimaryKey\": \"u8iOK9dJJi2shUPnBNFzRQ==\"\n};\nreturn msg;",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 1249,
+		"y": 96,
+		"wires": [["3f464d0b.c0b9b2"]
 		]
 	}
 ]
