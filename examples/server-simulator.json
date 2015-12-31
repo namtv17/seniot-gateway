@@ -72,7 +72,7 @@
 		"type": "function",
 		"z": "f83ed70.f07c128",
 		"name": "SendDeviceKey",
-		"func": "msg.payload = {\n    \"HostName\": \"LennoxLBAS-Hub.azure-devices.net\",\n    \"DeviceId\": \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\",\n    \"SharedAccessKeyName\" : \"device\",\n    \"PrimaryKey\": \"u8iOK9dJJi2shUPnBNFzRQ==\"\n};\nreturn msg;",
+		"func": "msg.payload = {\n    \"HostName\": \"LennoxLBAS-Hub.azure-devices.net\",\n    \"DeviceId\": \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\",\n    \"SharedAccessKeyName\" : \"device\",\n    \"PrimaryKey\": \"u1iOKadJJi2shUPnBNFzRQ==\"\n};\nreturn msg;",
 		"outputs": 1,
 		"noerr": 0,
 		"x": 500,

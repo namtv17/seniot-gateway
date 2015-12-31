@@ -569,7 +569,7 @@
 		"type": "function",
 		"z": "bf0637c8.40f9c8",
 		"name": "",
-		"func": "msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\nmsg.payload = {\n    \"HostName\": \"LennoxLBAS-Hub.azure-devices.net\",\n    \"DeviceId\": \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\",\n    \"SharedAccessKeyName\" : \"device\",\n    \"PrimaryKey\": \"u8iOK9dJJi2shUPnBNFzRQ==\"\n};\nreturn msg;",
+		"func": "msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\nmsg.payload = {\n    \"HostName\": \"LennoxLBAS-Hub.azure-devices.net\",\n    \"DeviceId\": \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\",\n    \"SharedAccessKeyName\" : \"device\",\n    \"PrimaryKey\": \"u1iOKadJJi2shUPnBNFzRQ==\"\n};\nreturn msg;",
 		"outputs": 1,
 		"noerr": 0,
 		"x": 1249,
