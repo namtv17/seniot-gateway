@@ -1,55 +1,49 @@
 [
 	{
-		"id": "5a9b9ecd.a5646",
-		"type": "azure-https-device",
-		"z": "bf0637c8.40f9c8",
-		"name": "Azure IoT HTTPS",
-		"deviceId": "00000-DEV-6C-60491LK-62705D-69827"
-	}, {
-		"id": "bdbc39a6.4243c8",
+		"id": "9fc954b2.6036a8",
 		"type": "websocket-listener",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"path": "/ws/gateway",
 		"wholemsg": "false"
 	}, {
-		"id": "1a6d0afd.e592f5",
+		"id": "52b03f54.ad4fc",
 		"type": "websocket in",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "BootUpRequest",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 80.5,
-		"y": 40,
-		"wires": [["7975f58a.868a0c", "3bbfd60c.c4402a"]
+		"x": 85,
+		"y": 30,
+		"wires": [["13bbb79d.ec4448", "dbe90763.2416f8"]
 		]
 	}, {
-		"id": "4e78c3d.fb1873c",
+		"id": "b0727844.4f8d88",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "Initialization",
 		"func": "context.global.device = null;\nmsg.method = \"POST\";\nmsg.url = context.global.serverUrl + \"/devices/\" + context.global.deviceId + \"/init\";\nmsg.payload = { \n    \"SerialNumber\": context.global.serialNumber\n};\nreturn msg;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 244,
-		"y": 104,
-		"wires": [["e163793c.1e9c88"]
+		"x": 248.5,
+		"y": 94,
+		"wires": [["df05964e.20fa68"]
 		]
 	}, {
-		"id": "7975f58a.868a0c",
+		"id": "13bbb79d.ec4448",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "MachinePowerUp",
 		"func": "msg.payload = JSON.parse(msg.payload);\nif(msg.payload.type == \"powerUp\") {\n    msg.payload.type = \"setStatus\";\n    msg.payload.data = \"Initializing...\";\n    msg.payload.next = \"INITIATED\";\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 284,
-		"y": 40,
-		"wires": [["64ded553.9b212c"]
+		"x": 288.5,
+		"y": 30,
+		"wires": [["b089bff8.4f764"]
 		]
 	}, {
-		"id": "2f9fa4b5.d0605c",
+		"id": "cce5e33c.331a2",
 		"type": "switch",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "If Error",
 		"property": "error",
 		"rules": [
@@ -61,267 +55,277 @@
 		],
 		"checkall": "true",
 		"outputs": 2,
-		"x": 573,
-		"y": 104,
-		"wires": [["11bce8bf.ee4317"],["df6ac116.20954"]
+		"x": 577.5,
+		"y": 94,
+		"wires": [["add35b2f.522ca8"],["ae9449d.f516bb8"]
 		]
 	}, {
-		"id": "11bce8bf.ee4317",
+		"id": "add35b2f.522ca8",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ConnServerError",
 		"func": "msg.payload = {\n    type : \"setStatus\",\n    data : \"Connection to server fail.\"\n};\nreturn msg;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 807,
-		"y": 69,
-		"wires": [["91a092c0.6e5f7"]
+		"x": 811.5,
+		"y": 59,
+		"wires": [["fd4209d6.02bdf8"]
 		]
 	}, {
-		"id": "b66518a8.499ae8",
+		"id": "9b085676.64f7a8",
 		"type": "azure-https out",
-		"z": "bf0637c8.40f9c8",
-		"device": "5a9b9ecd.a5646",
-		"x": 444,
-		"y": 299,
-		"wires": [["1fc0727e.e03f8e"]
+		"z": "20106f59.dfef9",
+		"name": "SendAzureHub",
+		"deviceId": "00000-DEV-6C-60491LK-62705D-69827",
+		"x": 609.5,
+		"y": 289,
+		"wires": [["c7ec256d.3813d8", "b6950a44.496af8"]
 		]
 	}, {
-		"id": "91a092c0.6e5f7",
+		"id": "fd4209d6.02bdf8",
 		"type": "websocket out",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowStatus",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 990,
-		"y": 69,
+		"x": 994.5,
+		"y": 59,
 		"wires": []
 	}, {
-		"id": "78aac4dd.87553c",
+		"id": "902998c.f6fd668",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "CheckIfNotInUse",
 		"func": "if (!context.global.device || (context.global.device && context.global.device.DeviceStatus != \"READYTOUSE\")) {\n    msg.method = \"GET\";\n    msg.url = context.global.serverUrl + \"/devices/\" + context.global.deviceId + \"?_t=\" + new Date().getTime();\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 254,
-		"y": 184,
-		"wires": [["e6e29a67.191d68"]
+		"x": 258.5,
+		"y": 174,
+		"wires": [["ebc50192.143b"]
 		]
 	}, {
-		"id": "64ded553.9b212c",
+		"id": "b089bff8.4f764",
 		"type": "websocket out",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowStatus",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 485,
-		"y": 40,
+		"x": 489.5,
+		"y": 30,
 		"wires": []
 	}, {
-		"id": "5092eddc.af6d14",
+		"id": "53589355.aca76c",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowFirstConnection",
 		"func": "msg.payload = {\n    type : \"setStatus\",\n    data : \"Testing the first connection to server...\",\n    next : \"READYTOUSE\"\n    };\nreturn msg;\n",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 458,
-		"y": 359,
-		"wires": [["9bf89585.640768"]
+		"x": 462.5,
+		"y": 349,
+		"wires": [["a69c0d1b.5963f"]
 		]
 	}, {
-		"id": "6dae69ff.925198",
+		"id": "1061aa27.ef9e56",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "CheckRegistered",
 		"func": "if (context.global.device && context.global.device.DeviceStatus == \"REGISTERED\") {\n    msg.method = \"GET\";\n    msg.url = context.global.serverUrl + \"/devices/\" + context.global.deviceId + \"/key?_t=\" + new Date().getTime();\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 251,
-		"y": 243,
-		"wires": [["1db7ee3f.e24812"]
+		"x": 255.5,
+		"y": 233,
+		"wires": [["66f3ad61.990c54"]
 		]
 	}, {
-		"id": "9bf89585.640768",
+		"id": "a69c0d1b.5963f",
 		"type": "websocket out",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowStatus",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 657,
-		"y": 359,
+		"x": 661.5,
+		"y": 349,
 		"wires": []
 	}, {
-		"id": "5d42f455.a2bd0c",
+		"id": "4389f00f.bc761",
 		"type": "websocket out",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowStatus",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 819,
-		"y": 184,
+		"x": 823.5,
+		"y": 174,
 		"wires": []
 	}, {
-		"id": "33548e1a.ccab72",
+		"id": "a8b4ed8b.574b1",
 		"type": "websocket out",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowStatus",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 848,
-		"y": 299,
+		"x": 989.5,
+		"y": 289,
 		"wires": []
 	}, {
-		"id": "1fc0727e.e03f8e",
+		"id": "c7ec256d.3813d8",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowTestResult",
-		"func": " msg.payload = {\n    type : \"setStatus\",\n    data : \"Send the message to Cloud \" + (msg.status? \"successful.\" : \"failed.\"),\n    next: msg.status ? \"READYTOUSE\" : \"ERROR\"\n};\nreturn msg;\n",
+		"func": " msg.payload = {\n    type : \"setStatus\",\n    data : \"Send the message to Cloud \" + (msg.error? \"failed.\" : \"successful.\"),\n    next: msg.error ? \"ERROR\" : \"READYTOUSE\"\n};\nreturn msg;\n",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 659,
-		"y": 299,
-		"wires": [["33548e1a.ccab72"]
+		"x": 820.5,
+		"y": 289,
+		"wires": [["a8b4ed8b.574b1"]
 		]
 	}, {
-		"id": "c92e5cd8.36d1a",
+		"id": "9dd12fb5.622ed",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "SaveDeviceKey",
-		"func": "msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\nreturn msg;",
+		"func": "msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\nvar deviceKey = JSON.parse(msg.payload).Data;\nmsg.payload = {\n\t\"HostName\": deviceKey.Host_Name,\n\t\"DeviceId\": deviceKey.Device_Id,\n\t\"SharedAccessKeyName\": \"device\",\n\t\"PrimaryKey\": deviceKey.Primary_Key\n}\nmsg.payload = JSON.stringify(msg.payload);\nreturn msg;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 609,
-		"y": 243,
-		"wires": [["3f464d0b.c0b9b2", "7089d662.8f7628"]
+		"x": 613.5,
+		"y": 233,
+		"wires": [["bfef45d3.4010b8", "9ee8b0e7.61175"]
 		]
 	}, {
-		"id": "a395e933.5c6a18",
+		"id": "2cce765a.d3318a",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "CheckInstalled",
-		"func": "if (context.global.device && context.global.device.DeviceStatus == \"INSTALLED\") {\n    msg.payload = { Data : context.global.device };\n    msg.payload.Data.DeviceProperties.ModelNumber = \"LCC-368\";\n    msg.payload.Data.DeviceProperties.UpdatedTime = new Date().toString();\n    msg.payload.Data.DeviceProperties.HubEnabledState = true;\n    msg.payload.Data.DeviceProperties.DeviceState = \"normal\";\n    return msg;\n}\nreturn null;",
+		"func": "if (context.global.device && context.global.device.DeviceStatus == \"INSTALLED\") {\n    msg.payload = { Data : context.global.device };\n    msg.payload.Data.DeviceProperties.DeviceId = \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\";\n    msg.payload.Data.DeviceProperties.ModelNumber = \"LCC-368\";\n    msg.payload.Data.DeviceProperties.UpdatedTime = new Date().toString();\n    msg.payload.Data.DeviceProperties.HubEnabledState = true;\n    msg.payload.Data.DeviceProperties.DeviceState = \"normal\";\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 245,
-		"y": 299,
-		"wires": [["b66518a8.499ae8", "5092eddc.af6d14"]
+		"x": 249.5,
+		"y": 289,
+		"wires": [["53589355.aca76c", "6f43810f.90bc8"]
 		]
 	}, {
-		"id": "3f464d0b.c0b9b2",
+		"id": "bfef45d3.4010b8",
 		"type": "file",
-		"z": "bf0637c8.40f9c8",
-		"name": "",
+		"z": "20106f59.dfef9",
+		"name": "SafeStorage",
 		"filename": "",
 		"appendNewline": false,
 		"createDir": true,
 		"overwriteFile": "true",
-		"x": 780,
-		"y": 243,
+		"x": 787.5,
+		"y": 233,
 		"wires": []
 	}, {
-		"id": "e163793c.1e9c88",
+		"id": "df05964e.20fa68",
 		"type": "http request",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "SendInitRequest",
 		"method": "use",
 		"ret": "txt",
 		"url": "",
-		"x": 417,
-		"y": 104,
-		"wires": [["2f9fa4b5.d0605c"]
+		"certId": "6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C",
+		"rejectUnauthorized": true,
+		"tlsClientAuthentication": true,
+		"x": 421.5,
+		"y": 94,
+		"wires": [["cce5e33c.331a2"]
 		]
 	}, {
-		"id": "1db7ee3f.e24812",
+		"id": "66f3ad61.990c54",
 		"type": "http request",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "GetDeviceKey",
 		"method": "use",
 		"ret": "txt",
 		"url": "",
-		"x": 433,
-		"y": 243,
-		"wires": [["c92e5cd8.36d1a"]
+		"certId": "6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C",
+		"rejectUnauthorized": false,
+		"tlsClientAuthentication": true,
+		"x": 437.5,
+		"y": 233,
+		"wires": [["9dd12fb5.622ed"]
 		]
 	}, {
-		"id": "e6e29a67.191d68",
+		"id": "ebc50192.143b",
 		"type": "http request",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "GetDeviceData",
 		"method": "use",
 		"ret": "txt",
 		"url": "",
-		"x": 436,
-		"y": 184,
-		"wires": [["e6655c0a.199aa", "5d810568.a27efc"]
+		"certId": "6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C",
+		"rejectUnauthorized": true,
+		"tlsClientAuthentication": true,
+		"x": 440.5,
+		"y": 174,
+		"wires": [["6b6ddf13.94922"]
 		]
 	}, {
-		"id": "3c8feb04.c37014",
+		"id": "48f826b0.b707d8",
 		"type": "inject",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "",
-		"topic": "CHECK",
+		"topic": "LOOP",
 		"payload": "",
 		"payloadType": "date",
-		"repeat": "2",
+		"repeat": "",
 		"crontab": "",
 		"once": false,
-		"x": 85,
-		"y": 184,
-		"wires": [["78aac4dd.87553c", "6dae69ff.925198", "a395e933.5c6a18", "f633e80a.09cc18", "67f93f7d.9806c"]
+		"x": 89.5,
+		"y": 174,
+		"wires": [["902998c.f6fd668", "1061aa27.ef9e56", "2cce765a.d3318a", "5fd51b66.a02ae4", "f0f1a8dd.0f0e58"]
 		]
 	}, {
-		"id": "e6655c0a.199aa",
+		"id": "6b6ddf13.94922",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "SaveDeviceModel",
-		"func": "if (msg.payload) {\n    context.global.device = JSON.parse(msg.payload).Data;\n    if (context.global.device) {\n        var status = {\n            \"INITIATED\" : \"PIN: \" + context.global.device.PinCode + \" SN: \" + context.global.serialNumber,\n            \"REGISTERED\" : \"The device has been regisreted.\",\n            \"INSTALLED\" : \"The device has been installed.\",\n            \"READYTOUSE\" : \"The device is ready to use.\",\n            \"LOCKED\" : \"The device has been locked.\"\n        }\n        msg.payload = {\n            type: \"setStatus\",\n            data: status[context.global.device.DeviceStatus]\n        }\n        return msg;\n    }\n}\nreturn null;",
+		"func": "if (msg.payload) {\n    context.global.device = JSON.parse(msg.payload).Data;\n    if (context.global.device && context.global.device.DeviceStatus != \"INSTALLED\") {\n        var status = {\n            \"NEW\" : \"The device is renewed. Reboot to initialize...\",\n            \"INITIATED\" : \"PIN: \" + context.global.device.PinCode + \" SN: \" + context.global.serialNumber,\n            \"REGISTERED\" : \"The device has been regisreted.\",\n            \"INSTALLED\" : \"The device has been installed.\",\n            \"READYTOUSE\" : \"The device is ready to use.\",\n            \"LOCKED\" : \"The device has been locked.\"\n        }\n        msg.payload = {\n            type: \"setStatus\",\n            data: status[context.global.device.DeviceStatus]\n        }\n        return msg;\n    }\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 630,
-		"y": 184,
-		"wires": [["5d42f455.a2bd0c"]
+		"x": 634.5,
+		"y": 174,
+		"wires": [["4389f00f.bc761"]
 		]
 	}, {
-		"id": "df6ac116.20954",
+		"id": "ae9449d.f516bb8",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "SaveDeviceModel",
 		"func": "if (msg.payload) {\n    var device = JSON.parse(msg.payload).Data.Device;\n    if (device && device.DeviceStatus) {\n        context.global.device = device;\n        msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\n        return msg;\n    }\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 809,
-		"y": 133,
-		"wires": [["8eb6f409.714908"]
+		"x": 813.5,
+		"y": 123,
+		"wires": [["de9913cc.2166f", "83acf23b.7c531"]
 		]
 	}, {
-		"id": "93feedf.f6c011",
+		"id": "83acf23b.7c531",
 		"type": "file",
-		"z": "bf0637c8.40f9c8",
-		"name": "",
+		"z": "20106f59.dfef9",
+		"name": "CleanUp",
 		"filename": "",
 		"appendNewline": false,
 		"createDir": false,
 		"overwriteFile": "delete",
-		"x": 1007,
-		"y": 133,
+		"x": 1011.5,
+		"y": 123,
 		"wires": []
 	}, {
-		"id": "7089d662.8f7628",
+		"id": "9ee8b0e7.61175",
 		"type": "debug",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "",
 		"active": true,
 		"console": "false",
 		"complete": "false",
-		"x": 918,
-		"y": 241,
+		"x": 955.5,
+		"y": 232,
 		"wires": []
 	}, {
-		"id": "3bbfd60c.c4402a",
+		"id": "dbe90763.2416f8",
 		"type": "delay",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "",
 		"pauseType": "delay",
 		"timeout": "3",
@@ -332,105 +336,137 @@
 		"randomLast": "5",
 		"randomUnits": "seconds",
 		"drop": false,
-		"x": 94,
-		"y": 104,
-		"wires": [["4e78c3d.fb1873c"]
+		"x": 98.5,
+		"y": 94,
+		"wires": [["b0727844.4f8d88"]
 		]
 	}, {
-		"id": "f633e80a.09cc18",
+		"id": "5fd51b66.a02ae4",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "CheckReadyToUse",
 		"func": "if (context.global.device && context.global.device.DeviceStatus == \"READYTOUSE\") {\n    msg.payload = {\n        type: \"setStatus\",\n        data: \"The device is ready to use.\"\n    }\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 257,
-		"y": 481,
-		"wires": [["50788e94.af877"]
+		"x": 261.5,
+		"y": 471,
+		"wires": [["b85a67aa.47a598"]
 		]
 	}, {
-		"id": "cc5944d8.33a6b8",
+		"id": "a806a101.57f96",
 		"type": "websocket out",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowStatus",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 654,
-		"y": 481,
+		"x": 844.5,
+		"y": 471,
 		"wires": []
 	}, {
-		"id": "67f93f7d.9806c",
+		"id": "f0f1a8dd.0f0e58",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "CheckInboundMsg",
 		"func": "if (context.global.device && context.global.device.DeviceStatus == \"PENDING\") {\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 255,
-		"y": 416,
-		"wires": [["fb36811b.04c98"]
+		"x": 259.5,
+		"y": 406,
+		"wires": [["9bc7ed77.64381"]
 		]
 	}, {
-		"id": "fb36811b.04c98",
+		"id": "9bc7ed77.64381",
 		"type": "azure-https in",
-		"z": "bf0637c8.40f9c8",
-		"device": "5a9b9ecd.a5646",
-		"x": 455,
-		"y": 416,
-		"wires": [["bfa074ef.405f88"]
+		"z": "20106f59.dfef9",
+		"name": "ReceiveAzureHub",
+		"deviceId": "00000-DEV-6C-60491LK-62705D-69827",
+		"x": 466.5,
+		"y": 406,
+		"wires": [["9e15c984.61ea38"]
 		]
 	}, {
-		"id": "d1ce47e3.2e31b8",
+		"id": "9bcbb510.643448",
 		"type": "websocket out",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowStatus",
-		"server": "bdbc39a6.4243c8",
+		"server": "9fc954b2.6036a8",
 		"client": "",
-		"x": 838,
-		"y": 416,
+		"x": 842.5,
+		"y": 406,
 		"wires": []
 	}, {
-		"id": "bfa074ef.405f88",
+		"id": "9e15c984.61ea38",
 		"type": "function",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "ShowTestResult",
-		"func": "msg.payload = {\n    type : \"setStatus\",\n    data : \"Receive the message from Cloud \" + (msg.status? \"successful.\" : \"failed.\"),\n    next: msg.status ? \"READYTOUSE\" : \"ERROR\"\n};\nreturn msg;\n",
+		"func": " msg.payload = {\n    type : \"setStatus\",\n    data : \"Receive the message from Cloud \" + (msg.error? \"failed.\" : \"successful.\"),\n    next: msg.error ? \"ERROR\" : \"READYTOUSE\"\n};\nreturn msg;\n",
 		"outputs": 1,
 		"noerr": 0,
-		"x": 655,
-		"y": 416,
-		"wires": [["d1ce47e3.2e31b8"]
+		"x": 659.5,
+		"y": 406,
+		"wires": [["9bcbb510.643448"]
 		]
 	}, {
-		"id": "50788e94.af877",
-		"type": "azure-https in",
-		"z": "bf0637c8.40f9c8",
-		"device": "5a9b9ecd.a5646",
-		"x": 466,
-		"y": 481,
-		"wires": [["cc5944d8.33a6b8"]
-		]
-	}, {
-		"id": "5d810568.a27efc",
+		"id": "de9913cc.2166f",
 		"type": "debug",
-		"z": "bf0637c8.40f9c8",
-		"name": "",
-		"active": false,
-		"console": "false",
-		"complete": "false",
-		"x": 615,
-		"y": 148,
-		"wires": []
-	}, {
-		"id": "8eb6f409.714908",
-		"type": "debug",
-		"z": "bf0637c8.40f9c8",
+		"z": "20106f59.dfef9",
 		"name": "",
 		"active": true,
 		"console": "false",
 		"complete": "false",
-		"x": 1028,
-		"y": 186,
+		"x": 1032.5,
+		"y": 176,
 		"wires": []
+	}, {
+		"id": "b6950a44.496af8",
+		"type": "debug",
+		"z": "20106f59.dfef9",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "true",
+		"x": 823.5,
+		"y": 349,
+		"wires": []
+	}, {
+		"id": "6f43810f.90bc8",
+		"type": "delay",
+		"z": "20106f59.dfef9",
+		"name": "",
+		"pauseType": "delay",
+		"timeout": "3",
+		"timeoutUnits": "seconds",
+		"rate": "1",
+		"rateUnits": "second",
+		"randomFirst": "1",
+		"randomLast": "5",
+		"randomUnits": "seconds",
+		"drop": false,
+		"x": 423.5,
+		"y": 289,
+		"wires": [["9b085676.64f7a8"]
+		]
+	}, {
+		"id": "b85a67aa.47a598",
+		"type": "azure-https out",
+		"z": "20106f59.dfef9",
+		"name": "SendAzureHub",
+		"deviceId": "00000-DEV-6C-60491LK-62705D-69827",
+		"x": 461,
+		"y": 471,
+		"wires": [["87778d44.78887"]
+		]
+	}, {
+		"id": "87778d44.78887",
+		"type": "function",
+		"z": "20106f59.dfef9",
+		"name": "ShowTestResult",
+		"func": " msg.payload = {\n    type : \"setStatus\",\n    data : \"Receive the message from Cloud \" + (msg.error? \"failed.\" : \"successful.\"),\n    next: msg.error ? \"ERROR\" : \"READYTOUSE\"\n};\nreturn msg;\n",
+		"outputs": 1,
+		"noerr": 0,
+		"x": 663,
+		"y": 471,
+		"wires": [["a806a101.57f96"]
+		]
 	}
 ]
