@@ -4,7 +4,7 @@
 		"type": "azure-https-device",
 		"z": "bf0637c8.40f9c8",
 		"name": "Azure IoT HTTPS",
-		"deviceId": null
+		"deviceId": "00000-DEV-6C-60491LK-62705D-69827"
 	}, {
 		"id": "bdbc39a6.4243c8",
 		"type": "websocket-listener",
@@ -101,7 +101,7 @@
 		"type": "function",
 		"z": "bf0637c8.40f9c8",
 		"name": "CheckIfNotInUse",
-		"func": "if (context.global.device && context.global.device.DeviceStatus != \"READYTOUSE\") {\n    msg.method = \"GET\";\n    msg.url = context.global.serverUrl + \"/devices/\" + context.global.deviceId + \"?_t=\" + new Date().getTime();\n    return msg;\n}\nreturn null;",
+		"func": "if (!context.global.device || (context.global.device && context.global.device.DeviceStatus != \"READYTOUSE\")) {\n    msg.method = \"GET\";\n    msg.url = context.global.serverUrl + \"/devices/\" + context.global.deviceId + \"?_t=\" + new Date().getTime();\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
 		"x": 254,
@@ -254,7 +254,7 @@
 		"url": "",
 		"x": 436,
 		"y": 184,
-		"wires": [["e6655c0a.199aa"]
+		"wires": [["e6655c0a.199aa", "5d810568.a27efc"]
 		]
 	}, {
 		"id": "3c8feb04.c37014",
@@ -264,7 +264,7 @@
 		"topic": "CHECK",
 		"payload": "",
 		"payloadType": "date",
-		"repeat": "1",
+		"repeat": "2",
 		"crontab": "",
 		"once": false,
 		"x": 85,
@@ -288,12 +288,12 @@
 		"type": "function",
 		"z": "bf0637c8.40f9c8",
 		"name": "SaveDeviceModel",
-		"func": "if (msg.payload) {\n    context.global.device = JSON.parse(msg.payload).Data.Device;\n    msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\n    return msg;\n}\nreturn null;",
+		"func": "if (msg.payload) {\n    var device = JSON.parse(msg.payload).Data.Device;\n    if (device && device.DeviceStatus) {\n        context.global.device = device;\n        msg.filename = context.global.safeStorage + \"/\" + context.global.deviceId + \"/device.json\";\n        return msg;\n    }\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
 		"x": 809,
 		"y": 133,
-		"wires": [["93feedf.f6c011"]
+		"wires": [["8eb6f409.714908"]
 		]
 	}, {
 		"id": "93feedf.f6c011",
@@ -410,5 +410,27 @@
 		"y": 481,
 		"wires": [["cc5944d8.33a6b8"]
 		]
+	}, {
+		"id": "5d810568.a27efc",
+		"type": "debug",
+		"z": "bf0637c8.40f9c8",
+		"name": "",
+		"active": false,
+		"console": "false",
+		"complete": "false",
+		"x": 615,
+		"y": 148,
+		"wires": []
+	}, {
+		"id": "8eb6f409.714908",
+		"type": "debug",
+		"z": "bf0637c8.40f9c8",
+		"name": "",
+		"active": true,
+		"console": "false",
+		"complete": "false",
+		"x": 1028,
+		"y": 186,
+		"wires": []
 	}
 ]
