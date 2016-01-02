@@ -79,7 +79,7 @@
 		"deviceId": "00000-DEV-6C-60491LK-62705D-69827",
 		"x": 609.5,
 		"y": 289,
-		"wires": [["c7ec256d.3813d8", "b6950a44.496af8"]
+		"wires": [["c7ec256d.3813d8"]
 		]
 	}, {
 		"id": "fd4209d6.02bdf8",
@@ -196,7 +196,7 @@
 		"type": "function",
 		"z": "20106f59.dfef9",
 		"name": "CheckInstalled",
-		"func": "if (context.global.device && context.global.device.DeviceStatus == \"INSTALLED\") {\n    msg.payload = { Data : context.global.device };\n    msg.payload.Data.DeviceProperties.DeviceId = \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\";\n    msg.payload.Data.DeviceProperties.ModelNumber = \"LCC-368\";\n    msg.payload.Data.DeviceProperties.UpdatedTime = new Date().toString();\n    msg.payload.Data.DeviceProperties.HubEnabledState = true;\n    msg.payload.Data.DeviceProperties.DeviceState = \"normal\";\n    return msg;\n}\nreturn null;",
+		"func": "if (context.global.device && context.global.device.DeviceStatus == \"INSTALLED\") {\n    delete msg.topic;\n    msg.payload = { \n        \"DeviceProperties\": {\n            \"DeviceID\": \"6103467D-5EF5-43D3-B5D8-E28FB7DB0F7C\",\n            \"HubEnabledState\": true,\n            \"CreatedTime\": \"2016-01-02T01:12:51.4185559Z\",\n            \"UpdatedTime\": \"2016-01-02T01:45:30.865582Z\",\n            \"Manufacturer\": \"Lennox International Inc.,\",\n            \"ModelNumber\": \"MD-365\",\n            \"SerialNumber\": \"SER1081\",\n            \"FirmwareVersion\": \"1.96\",\n            \"Platform\": \"Plat-64\",\n            \"Processor\": \"i3-595\",\n            \"InstalledRAM\": \"65 MB\",\n            \"Latitude\": 47.593307,\n            \"Longitude\": -122.332165\n        },\n        \"Commands\": [\n          {\n            \"Name\": \"PingDevice\",\n            \"Parameters\": null\n          },\n          {\n            \"Name\": \"StartTelemetry\",\n            \"Parameters\": null\n          },\n          {\n            \"Name\": \"StopTelemetry\",\n            \"Parameters\": null\n          },\n          {\n            \"Name\": \"ChangeSetPointTemp\",\n            \"Parameters\": [\n              {\n                \"Name\": \"SetPointTemp\",\n                \"Type\": \"double\"\n              }\n            ]\n          },\n          {\n            \"Name\": \"DiagnosticTelemetry\",\n            \"Parameters\": [\n              {\n                \"Name\": \"Active\",\n                \"Type\": \"boolean\"\n              }\n            ]\n          },\n          {\n            \"Name\": \"ChangeDeviceState\",\n            \"Parameters\": [\n              {\n                \"Name\": \"DeviceState\",\n                \"Type\": \"string\"\n              }\n            ]\n          }\n        ],\n        \"CommandHistory\": [],\n        \"ObjectType\": \"DeviceInfo\",\n        \"Version\": \"1.0\"\n    };\n    return msg;\n}\nreturn null;",
 		"outputs": 1,
 		"noerr": 0,
 		"x": 249.5,
@@ -382,7 +382,7 @@
 		"deviceId": "00000-DEV-6C-60491LK-62705D-69827",
 		"x": 466.5,
 		"y": 406,
-		"wires": [["9e15c984.61ea38"]
+		"wires": [["9e15c984.61ea38", "b6950a44.496af8"]
 		]
 	}, {
 		"id": "9bcbb510.643448",
@@ -424,28 +424,10 @@
 		"name": "",
 		"active": true,
 		"console": "false",
-		"complete": "true",
-		"x": 823.5,
-		"y": 349,
+		"complete": "payload.Name",
+		"x": 1010.5,
+		"y": 406,
 		"wires": []
-	}, {
-		"id": "6f43810f.90bc8",
-		"type": "delay",
-		"z": "20106f59.dfef9",
-		"name": "",
-		"pauseType": "delay",
-		"timeout": "3",
-		"timeoutUnits": "seconds",
-		"rate": "1",
-		"rateUnits": "second",
-		"randomFirst": "1",
-		"randomLast": "5",
-		"randomUnits": "seconds",
-		"drop": false,
-		"x": 423.5,
-		"y": 289,
-		"wires": [["9b085676.64f7a8"]
-		]
 	}, {
 		"id": "b85a67aa.47a598",
 		"type": "azure-https out",
@@ -467,6 +449,24 @@
 		"x": 663,
 		"y": 471,
 		"wires": [["a806a101.57f96"]
+		]
+	}, {
+		"id": "6f43810f.90bc8",
+		"type": "delay",
+		"z": "20106f59.dfef9",
+		"name": "",
+		"pauseType": "delay",
+		"timeout": "3",
+		"timeoutUnits": "seconds",
+		"rate": "1",
+		"rateUnits": "second",
+		"randomFirst": "1",
+		"randomLast": "5",
+		"randomUnits": "seconds",
+		"drop": false,
+		"x": 423.5,
+		"y": 289,
+		"wires": [["9b085676.64f7a8"]
 		]
 	}
 ]
